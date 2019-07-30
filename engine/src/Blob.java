@@ -1,10 +1,15 @@
-import java.text.SimpleDateFormat;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-public class Blob extends Node {
-    private final String m_Content;
-
-    public Blob(String i_Name, String i_ShaOne, String i_LastModifier, SimpleDateFormat i_ModificationDate, String i_Content) {
-        super(i_Name, i_ShaOne, i_LastModifier, i_ModificationDate);
-        this.m_Content = i_Content;
+public class Blob extends Node
+{
+    public Blob(String i_Content)
+    {
+        super(i_Content);
     }
+
 }
