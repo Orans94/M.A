@@ -1,12 +1,12 @@
 import java.nio.file.Path;
 import java.util.*;
 
-public class Wc {
+public class LastState {
     private Map<String, Node> m_LastCommitNodes = new HashMap<>();    //hold all the nodes of the last commit.
-    private String m_RootPath;
+    private Path m_RootPath;
     //private Commit m_CurrentCommitLoaded;
 
-    public Wc(String i_RootPath) {
+    public LastState(Path i_RootPath) {
         m_RootPath = i_RootPath;
     }
 

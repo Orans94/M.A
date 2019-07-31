@@ -10,10 +10,10 @@ public class Magit {
     //private Map<String, Node> m_Nodes;        //trade off ram vs
     private Map<String, Commit> m_Commits;
     private Map<String, Branch> m_Branches;
-    private static String s_MagitPath;
+    private static Path s_MagitPath;
     private Head m_Head;
 
-    public Magit(String i_magitPath) throws IOException {
+    public Magit(Path i_magitPath) throws IOException {
         //m_Nodes = new HashMap<>();          //what should it hold?
         m_Commits = new HashMap<>();
         m_Branches = new HashMap<>();
@@ -25,13 +25,13 @@ public class Magit {
     }
 
     public static Path getMagitDir() {
-        return Paths.get(s_MagitPath);
+        return s_MagitPath;
     }
 
     //Todo - fix the bug (Oran)
     private void createHeadAndMasterBranchFiles() throws IOException {
 
-        Path branchesPath = Paths.get(s_MagitPath).resolve("branches");
+        Path branchesPath = s_MagitPath.resolve("branches");
         Files.createFile(branchesPath.resolve("HEAD.txt"));
         Files.createFile(branchesPath.resolve("master.txt"));
         Files.write(branchesPath.resolve("HEAD.txt"), "master".getBytes());
@@ -67,6 +67,6 @@ public class Magit {
     }
     private void updateActiveBranchContent(String newCommitSha1Content) throws IOException {
         String activeBranch = m_Head.getActiveBranch().getBracnhName();
-        FileUtils.changeFileContent(Paths.get(s_MagitPath.concat("\\branches").concat("\\").concat(m_Head.getActiveBranch().getBracnhName().concat(".txt"))),newCommitSha1Content);
+        FileUtils.changeFileContent(s_MagitPath.resolve("branches").resolve(m_Head.getActiveBranch().getBracnhName()+".txt"),newCommitSha1Content);
     }
 }

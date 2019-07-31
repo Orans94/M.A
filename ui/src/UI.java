@@ -9,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class UI {
     Engine m_Engine;
@@ -39,12 +37,14 @@ public class UI {
                 break;
 
             case 2:
+                String commitMessage = getCommitMessageFromUser();
                 m_Engine.createNewCommit("First Commit");
                 break;
         }
     }
 
     //--------------------------------------S methods create new repository-----------------------------
+
     private String getRepositoryName() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter repository name");
@@ -67,7 +67,21 @@ public class UI {
 
         return path.toString();
     }
-    //--------------------------------------S methods create new repository-----------------------------
+
+    //--------------------------------------E methods create new repository-----------------------------
+
+
+    //--------------------------------------S methods create new Commit-----------------------------
+    private String getCommitMessageFromUser() {
+        String commitMessage;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter commit message");
+        commitMessage = scanner.nextLine();
+        return commitMessage;
+
+    }
+    //--------------------------------------E methods create new Commit-----------------------------
+
 
 }
 

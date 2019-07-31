@@ -3,24 +3,23 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Repository {
     private String m_Name;
-    private String m_Path;
-    private Wc m_WorkingCopy;
+    private Path m_Path;
+    private LastState m_LastState;
     private Magit m_Magit;
     private static List<String> m_ChildrenInformation;
 
 
-    public Repository(String i_Name,String i_Path) throws IOException {
-        m_Path = i_Path;
+    public Repository(String i_Name,Path i_RepoPath) throws IOException {
+        m_Path = i_RepoPath;
         m_Name = i_Name;
-        m_WorkingCopy = new Wc(m_Path);
-        String magitPath = i_Path.concat("\\.magit");
+        m_LastState = new LastState(m_Path);
+        Path magitPath = i_RepoPath.resolve(".magit");
         m_Magit = new Magit(magitPath);
         m_ChildrenInformation = new LinkedList<>();
     }
@@ -30,11 +29,11 @@ public class Repository {
     }
 
 
-    ////////////////////////S --------------new commit-------------------/////////////////////
+    //-----------------------------------S make commit--------------------------------//
     public void createCommit(String i_message) throws IOException {
         FileVisitor<Path> fileVisitor = new FileVisitor<Path>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attסrs) throws IOException {
                 if (dir.getFileName().toString().equals(".magit")) {
                     return FileVisitResult.SKIP_SUBTREE;
                 } else {
@@ -54,7 +53,7 @@ public class Repository {
                 blob.Zip(blobSha1, file);
 
                 //3. push Blob to m_Nodes
-                m_WorkingCopy.addNodeItem(blobSha1, blob);
+                m_LastState.addNodeItem(blobSha1, blob);
 
                 //4. append my info to m_ChildrenInformation
                 m_ChildrenInformation.add(blob.generateStringInformation(blobSha1, file.toFile().getName()));
@@ -70,12 +69,13 @@ public class Repository {
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException { //TODO handle exception
                 //1. num Children <- Check how many sub items i have.
                 int numOfChildren = getNumOfChildren(dir);
-                if(dir.equals(Paths.get(m_Path)))
+                if(dir.equals(m_Path))
                     numOfChildren--;
+
                 //2. add the item information of my children to my content
                 String folderContent = generateFolderContent(numOfChildren);
 
-                //3.create a folder object from the details and put it in m_Nodes
+                //3.create a folder object
                 Folder folder = new Folder(folderContent);
 
                 //4.add content details to item list of folder
@@ -127,7 +127,7 @@ public class Repository {
 
     private String addFolderToMap(Folder i_Folder, String i_FolderContentToSHA1) {
         String folderSHA1 = DigestUtils.sha1Hex(i_FolderContentToSHA1);
-        m_WorkingCopy.addNodeItem(folderSHA1, i_Folder);
+        m_LastState.addNodeItem(folderSHA1, i_Folder);
         return folderSHA1;
     }
 
@@ -151,4 +151,6 @@ public class Repository {
     private int getNumOfChildren(Path i_Path) throws IOException {
         return (int) Files.walk(i_Path, 1).count() - 1;
     }
+
+    //-----------------------------------S make commit--------------------------------//
 }
