@@ -48,10 +48,7 @@ public class FileUtils
             fis.close();
             fos.close();
         } catch (IOException e)
-        {
-
-        }
-
+        {}
     }
 
     public static void deleteFile(Path i_FileToDelte) throws IOException {

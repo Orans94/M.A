@@ -1,13 +1,5 @@
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Engine {
     private static String s_ActiveUser = "admin";
@@ -17,6 +9,11 @@ public class Engine {
         return s_ActiveUser;
     }
 
+    public boolean checkBranchNameIsExist(String i_BranchName) {
+        return m_Repository.getMagit().checkIfBranchNameIsExist(i_BranchName);
+    }
+
+    //------------------S create new repository -----------------------------------
     public void createNewRepository(String i_PathToCreateRepository, String i_RepositoryName) throws IOException {
         Path pathOfNewRepository = Paths.get(i_PathToCreateRepository).resolve(i_RepositoryName);
         Path repoPath = pathOfNewRepository;
@@ -39,15 +36,25 @@ public class Engine {
         Files.createFile(repoPath.resolve("hello.txt"));
         Files.write(repoPath.resolve("hello.txt"), "hello world".getBytes());
     }
+    //------------------E create new repository -----------------------------------
 
     public void createNewCommit(String i_Message) throws IOException {
         m_Repository.createCommit(i_Message);
+    }
+
+    public void createNewBranch(String i_BranchName) throws IOException {
+        m_Repository.createNewBranch(i_BranchName);
+    }
+
+    public void deleteExistingBranch(String branchToDeleteName) throws IOException, ActiveBranchDeleteExeption {
+        m_Repository.deleteExistingBranch(branchToDeleteName);
     }
 
 
     public boolean isDirectoryNameValid(String repositoryName) {
         return true;
     }
+
 }
 
 

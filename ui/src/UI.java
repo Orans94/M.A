@@ -1,11 +1,4 @@
-import org.apache.commons.codec.digest.DigestUtils;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -19,15 +12,15 @@ public class UI {
         m_Menu = new Menu();
     }
 
-    public void start() throws IOException {
+    public void start() throws IOException, ActiveBranchDeleteExeption {
         m_Menu.printMenu();
         while (true) {
             int choice = m_Menu.getUserChoice();
-            handeUserChoice(choice);
+            handleUserChoice(choice);
         }
     }
 
-    private void handeUserChoice(int i_UserChoice) throws IOException {
+    private void handleUserChoice(int i_UserChoice) throws IOException, ActiveBranchDeleteExeption {
         switch (i_UserChoice) {
             //Todo:Send the variables to the function.. now its just for checking.
             case 1:
@@ -38,9 +31,55 @@ public class UI {
 
             case 2:
                 String commitMessage = getCommitMessageFromUser();
-                m_Engine.createNewCommit("First Commit");
+                m_Engine.createNewCommit(commitMessage);
                 break;
+
+            case 3 :
+                String newBranchName = getBranchNameFromUser();
+                m_Engine.createNewBranch(newBranchName);
+                break;
+                //Todo talk with noam about handles exeptions
+            case 4:
+                boolean succedToDelete = false ;
+                while(!succedToDelete){
+                    try {
+                        String branchToDeleteName = getBranchNameToDelete();
+                        m_Engine.deleteExistingBranch(branchToDeleteName);
+                        succedToDelete=true;
+                    }catch(ActiveBranchDeleteExeption ex ){
+                        System.out.println(ex.getMessage());
+                    }
+                }
+                break;
+
         }
+    }
+
+    private String getBranchNameToDelete() {
+        String branchNameToDelete;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("please enter a branch name to delete");
+
+        branchNameToDelete = scanner.nextLine();
+
+        while(!m_Engine.checkBranchNameIsExist(branchNameToDelete)){
+            System.out.println("branch name doesn't exist, enter another name");
+            branchNameToDelete = scanner.nextLine();
+        }
+        return branchNameToDelete;
+    }
+
+    private String getBranchNameFromUser() {
+        String branchName;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("please enter a branch name");
+        branchName = scanner.nextLine();
+
+        while(m_Engine.checkBranchNameIsExist(branchName)){
+            System.out.println("please enter a branch name that doesn't exist");
+            branchName = scanner.nextLine();
+        }
+        return branchName;
     }
 
     //--------------------------------------S methods create new repository-----------------------------

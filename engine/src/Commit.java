@@ -3,7 +3,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;
-import java.util.List;
 
 public class Commit<pubic> {
     private String m_RootFolderSha1;
@@ -13,13 +12,13 @@ public class Commit<pubic> {
     private Date m_CommitDate;
     private CommitDelta m_CommitDelta;
 
-    public Commit(String i_RootFolderSha1, String i_Parent, String i_Message) {
+    public Commit(String i_RootFolderSha1, String i_Parent, String i_Message,CommitDelta i_CommitDelta) {
         m_RootFolderSha1 = i_RootFolderSha1;
         m_Parent = i_Parent;
         m_Message = i_Message;
         m_CommitDate = new Date();
-        //m_CommitDate = DateUtils.FormatToDate(m_CommitDate.toString());
         m_CommitAuthor = Engine.getActiveUser();
+        m_CommitDelta = i_CommitDelta;
     }
 
     @Override
