@@ -51,7 +51,18 @@ public class UI {
                     }
                 }
                 break;
+            case 5:
+                List<BranchInformation> allBranches = m_Engine.showAllBranches();
+                printAllBranchesData(allBranches);
+            case 6 :
+                String branchNametoCheckOut = getBranchNameForCheckOut();
+                m_Engine.checkOutBranch(branchNametoCheckOut);
+        }
+    }
 
+    private void printAllBranchesData(List<BranchInformation> allBranches) {
+        for(BranchInformation brancInformation : allBranches){
+            System.out.println(brancInformation.toString());
         }
     }
 
@@ -67,6 +78,19 @@ public class UI {
             branchNameToDelete = scanner.nextLine();
         }
         return branchNameToDelete;
+    }
+
+    private String getBranchNameForCheckOut(){
+        String branchName;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("please enter a branch name");
+        branchName = scanner.nextLine();
+
+        while(!m_Engine.checkBranchNameIsExist(branchName)){
+            System.out.println("please enter a branch name that exist");
+            branchName = scanner.nextLine();
+        }
+        return branchName;
     }
 
     private String getBranchNameFromUser() {
@@ -125,24 +149,5 @@ public class UI {
 }
 
 
-//making sha-1
-/*
-        String fileName = "C:\\Users\\ziv3r\\Desktop\\summer semester\\Game\\.magit\\objects\\a.txt";
-        File file = new File(fileName);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-
-        String text = new String();
-        String line;
-
-        while((line = br.readLine()) != null){
-            text.concat(line);
-        }
-
-        String shaone = DigestUtils.sha1Hex(text);
-
-        System.out.println(shaone);
-
- */
 
 

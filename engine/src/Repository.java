@@ -1,5 +1,6 @@
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -252,14 +253,75 @@ public class Repository {
 
     public void deleteExistingBranch(String i_BranchToDeleteName) throws ActiveBranchDeleteExeption, IOException {
 
-        if(i_BranchToDeleteName.equals(m_Magit.getHead().getActiveBranch().getBracnhName()))
+        if (i_BranchToDeleteName.equals(m_Magit.getHead().getActiveBranch().getBracnhName()))
             throw new ActiveBranchDeleteExeption();
 
-            m_Magit.deleteExistingBranch(i_BranchToDeleteName);
+        m_Magit.deleteExistingBranch(i_BranchToDeleteName);
 
 
     }
 
+    public void checkOut(String branchNametoCheckOut) throws IOException {
+        //1.delete all the current wc
+        deleteCurrentWc();
+
+        //2.find the branch in system and take the commit that it points to.
+        Branch branchToCheckOut = m_Magit.getBranches().get(branchNametoCheckOut);
+        String commitSha1 = branchToCheckOut.getSha1LastCommit();
+
+        String rootFolderSha1 = m_Magit.getCommits().get(commitSha1).getRootFolderSha1();
+
+        //3.unzip in temp directory the "node" and pass all the content to system
+        updateWcFromCommit(m_Path,rootFolderSha1);
+
+        //4.for each row if blob do an zip to path
+        //               else do unzip and deep to next path with the directory path
+
+        //5.
+    }
+
+    private void updateWcFromCommit(Path m_path , String currentSha1) {
+        
+    }
+
+    public void deleteCurrentWc() throws IOException {
+        FileVisitor<Path> fv = new FileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (dir.getFileName().toString().equals(".magit")) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                } else {
+                    return FileVisitResult.CONTINUE;
+                }
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (dir.getFileName().toString().equals("Check")||dir.getFileName().toString().equals("game"))
+                    return FileVisitResult.CONTINUE;
+                else {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            }
+
+        };
+        Path thePath = Paths.get("C:\\Users\\ziv3r\\Desktop\\Check");
+        Files.walkFileTree(m_Path,fv);
+    }
+}
 }
 
 

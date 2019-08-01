@@ -12,7 +12,7 @@ public class Commit<pubic> {
     private Date m_CommitDate;
     private CommitDelta m_CommitDelta;
 
-    public Commit(String i_RootFolderSha1, String i_Parent, String i_Message,CommitDelta i_CommitDelta) {
+    public Commit(String i_RootFolderSha1, String i_Parent, String i_Message, CommitDelta i_CommitDelta) {
         m_RootFolderSha1 = i_RootFolderSha1;
         m_Parent = i_Parent;
         m_Message = i_Message;
@@ -21,24 +21,34 @@ public class Commit<pubic> {
         m_CommitDelta = i_CommitDelta;
     }
 
+    public String getRootFolderSha1() {
+        return m_RootFolderSha1;
+    }
+
+
     @Override
     public String toString() {
         return
-                "" + m_RootFolderSha1+ ','
+                "" + m_RootFolderSha1 + ','
                         + m_Parent + ','
                         + m_Message + ','
                         + m_CommitDate.toString() + ','
-                        + m_CommitAuthor ;
-                        //Todo add all the commit delta information to toString.
-                        //  + ', + m_CommitDelta.
+                        + m_CommitAuthor;
+        //Todo add all the commit delta information to toString.
+        //  + ', + m_CommitDelta.
     }
 
     public String generateSha1() {
         String sha1CommitContent = StringUtilities.makeSha1Content(this.toString());
         return DigestUtils.sha1Hex(sha1CommitContent);
     }
+
     public void Zip(String i_CommitSha1) throws IOException {
         Path objectsPath = Magit.getMagitDir().resolve("objects");
-        FileUtils.createFileZipAndDelete(objectsPath,i_CommitSha1,this.toString());
+        FileUtils.createFileZipAndDelete(objectsPath, i_CommitSha1, this.toString());
+    }
+
+    public String getMessage() {
+        return m_Message;
     }
 }

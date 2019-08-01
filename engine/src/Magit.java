@@ -5,12 +5,14 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Magit {
+
     //private Map<String, Node> m_Nodes;        //trade off ram vs
     private Map<String, Commit> m_Commits;
     private Map<String, Branch> m_Branches;
     private static Path s_MagitPath;
     private static Path s_ObjectsPath;
     private Head m_Head;
+
 
     public Magit(Path i_magitPath) throws IOException {
         //m_Nodes = new HashMap<>();          //what should it hold?
@@ -21,17 +23,32 @@ public class Magit {
         m_Branches.put("master", br);
         createHeadAndMasterBranchFiles();
         m_Head = new Head(br);
-
         s_ObjectsPath = s_MagitPath.resolve("branches");
     }
+
+    public Map<String, Commit> getCommits() {
+        return m_Commits;
+    }
+
+    public Map<String, Branch> getBranches() {
+        return m_Branches;
+    }
+
 
     public static Path getMagitDir() {
         return s_MagitPath;
     }
 
+    public static Path getObjectsPath() {
+        return s_ObjectsPath;
+    }
+
+    public Head getHead() {
+        return m_Head;
+    }
+
     //Todo - fix the bug (Oran)
     private void createHeadAndMasterBranchFiles() throws IOException {
-
         Path branchesPath = s_MagitPath.resolve("branches");
         Files.createFile(branchesPath.resolve("HEAD.txt"));
         Files.createFile(branchesPath.resolve("master.txt"));
@@ -43,9 +60,6 @@ public class Magit {
     }
 
 
-    public Head getHead() {
-        return m_Head;
-    }
 
     //------------------------------------------adding new commit to the system----------------------------------
     public void handleNewCommit(String i_rootFolderSha1, String i_message, CommitDelta i_CommitDeltaFromWalkTree) throws IOException {
@@ -93,5 +107,20 @@ public class Magit {
         m_Branches.remove(i_branchToDeleteName);
         Path p = s_MagitPath.resolve("branches").resolve(i_branchToDeleteName + "txt");
         FileUtils.deleteFile(s_MagitPath.resolve("branches").resolve(i_branchToDeleteName + ".txt"));
+    }
+
+    public List<BranchInformation> getAllBarnchesInSystem() {
+
+        List<BranchInformation> allBranchesInformation = new LinkedList<>();
+        for (Map.Entry<String, Branch> entry : m_Branches.entrySet()) {
+            BranchInformation branchInformaton = new BranchInformation();
+            branchInformaton.m_BracnhName = (entry.getKey());
+            if(branchInformaton.m_BracnhName.equals(m_Head.getActiveBranch().getBracnhName()))
+                branchInformaton.m_isACtiveBranch = true;
+            branchInformaton.m_Sha1LastCommit = entry.getValue().getSha1LastCommit();
+            branchInformaton.m_CommitMessage = m_Commits.get(branchInformaton.m_Sha1LastCommit).getMessage();
+            allBranchesInformation.add(branchInformaton);
+        }
+        return allBranchesInformation;
     }
 }

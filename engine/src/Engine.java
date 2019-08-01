@@ -1,5 +1,7 @@
 import java.io.*;
 import java.nio.file.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Engine {
     private static String s_ActiveUser = "admin";
@@ -55,6 +57,22 @@ public class Engine {
         return true;
     }
 
+    public List<BranchInformation> showAllBranches() {
+        return m_Repository.getMagit().getAllBarnchesInSystem();
+    }
+
+    public void checkOutBranch(String branchNametoCheckOut) throws IOException {
+        //1.delete all the current wc
+        m_Repository.checkOut(branchNametoCheckOut);
+        //2.find the branch in system and take the commit that it points to.
+
+        //3.unzip in temp directory the "node" and pass all the content to system
+
+        //4.for each row if blob do an zip to path
+        //               else do unzip and deep to next path with the directory path
+
+        //5.
+    }
 }
 
 
