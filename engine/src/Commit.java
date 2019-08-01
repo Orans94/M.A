@@ -11,6 +11,7 @@ public class Commit<pubic> {
     private String m_Message;
     private String m_CommitAuthor;
     private Date m_CommitDate;
+    private CommitDelta m_CommitDelta;
 
     public Commit(String i_RootFolderSha1, String i_Parent, String i_Message) {
         m_RootFolderSha1 = i_RootFolderSha1;
@@ -28,7 +29,9 @@ public class Commit<pubic> {
                         + m_Parent + ','
                         + m_Message + ','
                         + m_CommitDate.toString() + ','
-                        + m_CommitAuthor;
+                        + m_CommitAuthor ;
+                        //Todo add all the commit delta information to toString.
+                        //  + ', + m_CommitDelta.
     }
 
     public String generateSha1() {

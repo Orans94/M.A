@@ -2,16 +2,17 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class LastState {
-    private Map<String, Node> m_LastCommitNodes = new HashMap<>();    //hold all the nodes of the last commit.
-    private Path m_RootPath;
-    //private Commit m_CurrentCommitLoaded;
+    LastCommitInformation m_lastCommitInformation = new LastCommitInformation();
 
+    private Path m_RootPath;
+
+    //private Commit m_CurrentCommitLoaded;
     public LastState(Path i_RootPath) {
         m_RootPath = i_RootPath;
     }
 
-    public void addNodeItem(String i_NodeSha1, Node i_NewNodeToadd) {
-        m_LastCommitNodes.put
-                (i_NodeSha1, i_NewNodeToadd);
+    public void addNodeItem(Path i_FilePath ,String i_NodeSha1, Node i_NewNodeToadd) {
+        m_lastCommitInformation.getSha1FileToNode().put(i_NodeSha1, i_NewNodeToadd);
+        m_lastCommitInformation.getFilePathToSha1().put(i_FilePath,i_NodeSha1);
     }
 }
