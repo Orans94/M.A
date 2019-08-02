@@ -22,4 +22,8 @@ public class LastCommitInformation {
         this.m_FilePathToSha1 = m_FilePathToSha1;
     }
 
+    public void clear() {
+        m_Sha1FileToNode.clear();
+        m_FilePathToSha1.clear();
+    }
 }

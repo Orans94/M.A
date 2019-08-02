@@ -5,6 +5,11 @@ import java.util.List;
 
 public class Engine {
     private static String s_ActiveUser = "admin";
+
+    public Repository getRepository() {
+        return m_Repository;
+    }
+
     private Repository m_Repository;
 
     public static String getActiveUser() {
@@ -72,6 +77,22 @@ public class Engine {
         //               else do unzip and deep to next path with the directory path
 
         //5.
+    }
+
+    public void changeActiveUserName(String i_NewUserName) {
+        s_ActiveUser = i_NewUserName;
+    }
+
+    public void showAllFilesPointsFromLastCommit() {
+        m_Repository.getLastState().showAllFilesFromActiveBranch();
+    }
+
+    public void showActiveBranchHistory() {
+        m_Repository.getMagit().showActiveBranchHistory();
+    }
+
+    public FileWalkResult showStatus() throws IOException {
+        return m_Repository.showStatus();
     }
 }
 

@@ -5,7 +5,6 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Magit {
-
     //private Map<String, Node> m_Nodes;        //trade off ram vs
     private Map<String, Commit> m_Commits;
     private Map<String, Branch> m_Branches;
@@ -23,7 +22,7 @@ public class Magit {
         m_Branches.put("master", br);
         createHeadAndMasterBranchFiles();
         m_Head = new Head(br);
-        s_ObjectsPath = s_MagitPath.resolve("branches");
+        s_ObjectsPath = s_MagitPath.resolve("objects");
     }
 
     public Map<String, Commit> getCommits() {
@@ -60,12 +59,12 @@ public class Magit {
     }
 
 
-
     //------------------------------------------adding new commit to the system----------------------------------
     public void handleNewCommit(String i_rootFolderSha1, String i_message, CommitDelta i_CommitDeltaFromWalkTree) throws IOException {
         //1.create new sha1
         Commit commit = new Commit(i_rootFolderSha1,
-                m_Head.getActiveBranch().getSha1LastCommit(),
+                m_Head.getActiveBranch().getSha1LastCommit() == "" ? null :
+                        m_Commits.get(m_Head.getActiveBranch().getSha1LastCommit()),
                 i_message, i_CommitDeltaFromWalkTree);
 
         //2.generate commit sha1 and add to commits
@@ -110,17 +109,30 @@ public class Magit {
     }
 
     public List<BranchInformation> getAllBarnchesInSystem() {
-
         List<BranchInformation> allBranchesInformation = new LinkedList<>();
         for (Map.Entry<String, Branch> entry : m_Branches.entrySet()) {
             BranchInformation branchInformaton = new BranchInformation();
             branchInformaton.m_BracnhName = (entry.getKey());
-            if(branchInformaton.m_BracnhName.equals(m_Head.getActiveBranch().getBracnhName()))
+            if (branchInformaton.m_BracnhName.equals(m_Head.getActiveBranch().getBracnhName()))
                 branchInformaton.m_isACtiveBranch = true;
             branchInformaton.m_Sha1LastCommit = entry.getValue().getSha1LastCommit();
             branchInformaton.m_CommitMessage = m_Commits.get(branchInformaton.m_Sha1LastCommit).getMessage();
             allBranchesInformation.add(branchInformaton);
         }
         return allBranchesInformation;
+    }
+
+    public void showActiveBranchHistory() {
+        String lastCommitSha1 = m_Head.getActiveBranch().getSha1LastCommit();
+        Commit currentCommit = m_Commits.get(lastCommitSha1);
+        printActiveBranchHistory(currentCommit);
+    }
+
+    //Todo delete root folder sha1 from here.
+    private void printActiveBranchHistory(Commit currentCommit) {
+        while (currentCommit != null) {
+            System.out.println(currentCommit.toString());
+            printActiveBranchHistory(currentCommit.getParent());
+        }
     }
 }

@@ -21,11 +21,9 @@ public class Menu {
 
     public void printMenu(){
         System.out.println(k_Menu.toString());
-
     }
 
     public int getUserChoice() {
-
         Scanner in = new Scanner(System.in);
         int choice = in.nextInt();
         while(!inRange(choice,k_MinValue,k_MaxValue)){
@@ -34,6 +32,7 @@ public class Menu {
         }
         return choice;
     }
+
     private boolean inRange(int i_UserChoice, int i_MinValue, int i_MaxValue){
         return i_UserChoice>=i_MinValue && i_UserChoice <= i_MaxValue ;
     }

@@ -1,6 +1,6 @@
 public class Branch {
     private String m_BracnhName;
-    private String m_Sha1LastCommit;
+    private String m_Sha1LastCommit = "";
 
     public Branch(String i_BranchName, String i_LastCommitSha1) {
         m_BracnhName = i_BranchName;

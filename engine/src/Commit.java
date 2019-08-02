@@ -6,13 +6,13 @@ import java.util.Date;
 
 public class Commit<pubic> {
     private String m_RootFolderSha1;
-    private String m_Parent;
+    private Commit m_Parent;
     private String m_Message;
     private String m_CommitAuthor;
     private Date m_CommitDate;
     private CommitDelta m_CommitDelta;
 
-    public Commit(String i_RootFolderSha1, String i_Parent, String i_Message, CommitDelta i_CommitDelta) {
+    public Commit(String i_RootFolderSha1, Commit i_Parent, String i_Message, CommitDelta i_CommitDelta) {
         m_RootFolderSha1 = i_RootFolderSha1;
         m_Parent = i_Parent;
         m_Message = i_Message;
@@ -50,5 +50,9 @@ public class Commit<pubic> {
 
     public String getMessage() {
         return m_Message;
+    }
+
+    public Commit getParent() {
+        return m_Parent;
     }
 }

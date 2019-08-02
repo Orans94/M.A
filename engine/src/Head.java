@@ -10,4 +10,8 @@ public class Head {
         return m_ActiveBranch;
     }
 
+    public void setActiveBranch(Branch m_ActiveBranch) {
+        this.m_ActiveBranch = m_ActiveBranch;
+    }
+
 }

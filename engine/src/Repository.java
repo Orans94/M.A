@@ -1,11 +1,15 @@
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class Repository {
     private String m_Name;
@@ -13,6 +17,20 @@ public class Repository {
     private LastState m_LastState;
     private Magit m_Magit;
     private static List<String> m_ChildrenInformation;
+
+    public LastState getLastState() {
+        return m_LastState;
+    }
+
+    public String getM_Name() {
+        return m_Name;
+    }
+
+    public Path getM_Path() {
+        return m_Path;
+    }
+
+
 
     public Repository(String i_Name, Path i_RepoPath) throws IOException {
         m_Path = i_RepoPath;
@@ -199,6 +217,7 @@ public class Repository {
         m_Magit.handleNewCommit(i_RootFolderSha1, i_message, i_CommitDeltaFromWalkTree);
     }
 
+    //Think if to move this to file.utils??
     private void ZipAllNewFiles(LastCommitInformation mapToZip) throws IOException {
         //walk throw all the hash map of the paths send the path and pass the
         //node from the other map also
@@ -216,7 +235,6 @@ public class Repository {
     }
 
     private void FindAllDeletedFiles(FileWalkResult walkTreeResult, LastCommitInformation m_lastCommitInformation) {
-
         //1.concat all the paths in the walkFileTreeResult to one map (and to list of paths)
         Map<Path, String> unChangedFiles = walkTreeResult.getUnchangedFiles().getFilePathToSha1();
         Map<Path, String> FilesToZip = walkTreeResult.getFilesToZip().getFilePathToSha1();
@@ -261,7 +279,10 @@ public class Repository {
 
     }
 
+    //---------------------------------S Check Out--------------------------------
     public void checkOut(String branchNametoCheckOut) throws IOException {
+        //0.Todo check if there are any opennig changes - show Status.
+
         //1.delete all the current wc
         deleteCurrentWc();
 
@@ -271,17 +292,72 @@ public class Repository {
 
         String rootFolderSha1 = m_Magit.getCommits().get(commitSha1).getRootFolderSha1();
 
-        //3.unzip in temp directory the "node" and pass all the content to system
-        updateWcFromCommit(m_Path,rootFolderSha1);
+        //3.delete all the data structurs that holds last commit data
+        updateSystemData(branchNametoCheckOut);
 
-        //4.for each row if blob do an zip to path
-        //               else do unzip and deep to next path with the directory path
-
-        //5.
+        //4.update the wc - get in from root folder in
+        updateWcFromCommit(m_Path, rootFolderSha1);
     }
 
-    private void updateWcFromCommit(Path m_path , String currentSha1) {
-        
+    private void updateSystemData(String branchNametoCheckOut) {
+        m_LastState.clearAll();
+        Branch activeBranch = m_Magit.getBranches().get(branchNametoCheckOut);
+        m_Magit.getHead().setActiveBranch(activeBranch);
+
+    }
+
+    private void updateWcFromCommit(Path m_path, String currentSha1) throws IOException {
+        String zipContext = getStringFromFolderZip(currentSha1);
+        String[] lines = zipContext.split(System.lineSeparator());
+        for (String line : lines) {
+            String fileType= getTypeFromLine(line);
+            if(fileType.equals("Blob")){
+                //do unzip of the blob to workingCopy
+                //void unzip(final String zipFilePath, final String unzipLocation) throws IOException, IOException {
+                String blobSha1 = getSha1FromItemString(line);
+                FileUtils.unzip(Magit.getObjectsPath().resolve(blobSha1+".zip").toString(),m_path.toString());
+            }
+            else{
+                //create the directory in the current path and deep into the directory
+                String dirName = getNameFromLine(line);
+                Files.createDirectory(m_path.resolve(dirName));
+                updateWcFromCommit(m_path.resolve(dirName),getSha1FromLine(line));
+            }
+        }
+    }
+
+    private String getNameFromLine(String i_OneLine) {
+        String[]members = i_OneLine.split(",");
+        return members[0];
+    }
+
+    private String getSha1FromLine(String i_OneLine) {
+        String[]members = i_OneLine.split(",");
+        return members[1];
+    }
+
+    private String getTypeFromLine(String i_oneLine) {
+        String[]members = i_oneLine.split(",");
+        return members[2];
+    }
+
+    private String getStringFromFolderZip(String i_currentSha1) throws IOException {
+        String currentFileContent;
+
+        ZipFile zipFile = new ZipFile(m_Magit.getObjectsPath().resolve(i_currentSha1 + ".zip").toString());
+        ZipEntry zipEntry = zipFile.getEntry(i_currentSha1 + ".txt");
+
+        InputStream inputStream =   zipFile.getInputStream(zipEntry);
+
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        currentFileContent = result.toString("UTF-8");
+        return currentFileContent;
+
     }
 
     public void deleteCurrentWc() throws IOException {
@@ -309,7 +385,7 @@ public class Repository {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                if (dir.getFileName().toString().equals("Check")||dir.getFileName().toString().equals("game"))
+                if (dir.getFileName().toString().equals("Check") || dir.getFileName().toString().equals("game"))
                     return FileVisitResult.CONTINUE;
                 else {
                     Files.delete(dir);
@@ -319,9 +395,18 @@ public class Repository {
 
         };
         Path thePath = Paths.get("C:\\Users\\ziv3r\\Desktop\\Check");
-        Files.walkFileTree(m_Path,fv);
+        Files.walkFileTree(m_Path, fv);
     }
-}
+
+    public FileWalkResult showStatus() throws IOException {
+
+        FileWalkResult walkTreeResult = FileWalkTree();
+        FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
+        return walkTreeResult;
+    }
+
+    //---------------------------------S Check Out--------------------------------
+
 }
 
 

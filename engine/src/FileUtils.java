@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtils
@@ -49,6 +50,32 @@ public class FileUtils
             fos.close();
         } catch (IOException e)
         {}
+    }
+
+    //zipFilePath = the path of the file end with .zip
+    //unzip location is the name of the directory to put the unzipped file
+    public static void unzip(final String zipFilePath, final String unzipLocation) throws IOException, IOException {
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry entry = zipInputStream.getNextEntry();
+            while (entry != null) {
+                Path filePath = Paths.get(unzipLocation, entry.getName());
+                if (!entry.isDirectory()) {
+                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath.toAbsolutePath().toString()))) {
+                        byte[] bytesIn = new byte[1024];
+                        int read = 0;
+                        while ((read = zipInputStream.read(bytesIn)) != -1) {
+                            bos.write(bytesIn, 0, read);
+                        }
+                    }
+                } else {
+                    Files.createDirectories(filePath);
+                }
+
+                zipInputStream.closeEntry();
+                entry = zipInputStream.getNextEntry();
+            }
+        }
     }
 
     public static void deleteFile(Path i_FileToDelte) throws IOException {
