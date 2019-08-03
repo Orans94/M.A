@@ -54,19 +54,10 @@ public class Engine {
     }
 
     public void deleteExistingBranch(String branchToDeleteName) throws IOException, ActiveBranchDeleteExeption {
-        m_Repository.deleteExistingBranch(branchToDeleteName);
+        m_Repository.deleteExistingBranch
+                (branchToDeleteName);
     }
 
-
-    public boolean isDirectoryNameValid(String repositoryName) {
-        for(char toCheck : FileUtils.ILLEGAL_CHARACTERS)
-        {
-            if (repositoryName.contains(String.valueOf(toCheck)))
-                return false;
-        }
-
-        return repositoryName != "";
-    }
 
     public List<BranchInformation> showAllBranches() {
         return m_Repository.getMagit().getAllBarnchesInSystem();
@@ -75,14 +66,7 @@ public class Engine {
     public void checkOutBranch(String branchNametoCheckOut) throws IOException {
         //1.delete all the current wc
         m_Repository.checkOut(branchNametoCheckOut);
-        //2.find the branch in system and take the commit that it points to.
 
-        //3.unzip in temp directory the "node" and pass all the content to system
-
-        //4.for each row if blob do an zip to path
-        //               else do unzip and deep to next path with the directory path
-
-        //5.
     }
 
     public void changeActiveUserName(String i_NewUserName) {
@@ -98,7 +82,16 @@ public class Engine {
     }
 
     public FileWalkResult showStatus() throws IOException {
-        return m_Repository.showStatus();
+        return m_Repository.getStatus();
+    }
+
+    public boolean isDirectoryNameValid (String repositoryName){
+        for (char toCheck : FileUtils.ILLEGAL_CHARACTERS) {
+            if (repositoryName.contains(String.valueOf(toCheck)))
+                return false;
+        }
+
+        return repositoryName != "";
     }
 }
 

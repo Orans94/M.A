@@ -99,7 +99,7 @@ public class Magit {
         String sha1OfLastCommitFromHeadBranch = m_Head.getActiveBranch().getSha1LastCommit();
         Branch newBranch = new Branch(i_branchName, sha1OfLastCommitFromHeadBranch);
         m_Branches.put(i_branchName, newBranch);
-        FileUtils.CreateAndWriteTxtFile(s_ObjectsPath.resolve(i_branchName + ".txt"), newBranch.getSha1LastCommit());
+        FileUtils.CreateAndWriteTxtFile(s_MagitPath.resolve("branches").resolve(i_branchName + ".txt"), newBranch.getSha1LastCommit());
     }
 
     public void deleteExistingBranch(String i_branchToDeleteName) throws IOException {

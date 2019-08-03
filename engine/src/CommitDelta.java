@@ -12,4 +12,6 @@ public class CommitDelta {
     public List<Path> getDeletedFiles(){ return m_ListDeletedFiles; }
 
     public void setDeletedFiles(List<Path> p) { m_ListDeletedFiles = p; }
+
+
 }

@@ -278,9 +278,15 @@ public class Repository {
     }
 
     //---------------------------------S Check Out--------------------------------
-    public void checkOut(String branchNametoCheckOut) throws IOException {
-        //0.Todo check if there are any opennig changes - show Status.
 
+    public boolean isWcClean() throws IOException{
+        FileWalkResult wc = getStatus();
+        CommitDelta delta = wc.getCommitDelta();
+        return delta.getModifiedFiles().size() + delta.getNewFiles().size() +
+                delta.getDeletedFiles().size() == 0;
+    }
+
+    public void checkOut(String branchNametoCheckOut) throws IOException {
         //1.delete all the current wc
         deleteCurrentWc();
 
@@ -290,36 +296,44 @@ public class Repository {
 
         String rootFolderSha1 = m_Magit.getCommits().get(commitSha1).getRootFolderSha1();
 
-        //3.delete all the data structurs that holds last commit data
-        updateSystemData(branchNametoCheckOut);
+        //3.update all the data structurs that holds last commit data
+        updateSystemData(branchNametoCheckOut, rootFolderSha1);
 
         //4.update the wc - get in from root folder in
         updateWcFromCommit(m_Path, rootFolderSha1);
+
+        FileUtils.changeFileContent(Magit.getMagitDir().resolve("branches").resolve("HEAD.txt"), branchNametoCheckOut);
     }
 
-    private void updateSystemData(String branchNametoCheckOut) {
+    private void updateSystemData(String branchNametoCheckOut, String i_RootSha1) throws IOException {
         m_LastState.clearAll();
         Branch activeBranch = m_Magit.getBranches().get(branchNametoCheckOut);
+        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(getStringFromFolderZip(i_RootSha1)));
         m_Magit.getHead().setActiveBranch(activeBranch);
-
     }
 
-    private void updateWcFromCommit(Path m_path, String currentSha1) throws IOException {
+    private void updateWcFromCommit(Path path, String currentSha1) throws IOException {
         String zipContext = getStringFromFolderZip(currentSha1);
         String[] lines = zipContext.split(System.lineSeparator());
         for (String line : lines) {
-            String fileType= getTypeFromLine(line);
+            String fileType = getTypeFromLine(line);
             if(fileType.equals("Blob")){
                 //do unzip of the blob to workingCopy
                 //void unzip(final String zipFilePath, final String unzipLocation) throws IOException, IOException {
                 String blobSha1 = getSha1FromItemString(line);
-                FileUtils.unzip(Magit.getObjectsPath().resolve(blobSha1+".zip").toString(),m_path.toString());
+                FileUtils.unzip(Magit.getObjectsPath().resolve(blobSha1+".zip").toString(),path.toString());
+                String blobContent = new String(Files.readAllBytes(path.resolve(getNameFromLine(line))));
+                m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), blobSha1, new Blob(blobContent));
+
             }
             else{
                 //create the directory in the current path and deep into the directory
                 String dirName = getNameFromLine(line);
-                Files.createDirectory(m_path.resolve(dirName));
-                updateWcFromCommit(m_path.resolve(dirName),getSha1FromLine(line));
+                Files.createDirectory(path.resolve(dirName));
+                updateWcFromCommit(path.resolve(dirName),getSha1FromLine(line));
+                String folderSha1 = getSha1FromItemString(line);
+                String fodlerContent = getStringFromFolderZip(folderSha1);
+                m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), folderSha1, new Folder(fodlerContent));
             }
         }
     }
@@ -383,7 +397,7 @@ public class Repository {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                if (dir.getFileName().toString().equals("Check") || dir.getFileName().toString().equals("game"))
+                if (dir.getFileName().toString().equals(m_Name))
                     return FileVisitResult.CONTINUE;
                 else {
                     Files.delete(dir);
@@ -396,7 +410,7 @@ public class Repository {
         Files.walkFileTree(m_Path, fv);
     }
 
-    public FileWalkResult showStatus() throws IOException {
+    public FileWalkResult getStatus() throws IOException {
 
         FileWalkResult walkTreeResult = FileWalkTree();
         FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);

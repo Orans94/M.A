@@ -20,7 +20,7 @@ public class Menu {
                     "13. Exit"+System.lineSeparator();
 
     public void printMenu(){
-        System.out.println(k_Menu.toString());
+        System.out.println(k_Menu);
     }
 
     public int getUserChoice() {
