@@ -1,16 +1,21 @@
+import javafx.scene.Parent;
+
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+// UI has an inner enum eUserChoice
 public class UI {
-    Engine m_Engine;
-    Menu m_Menu;
+   private Engine m_Engine;
+   private Menu m_Menu;
 
     public UI() {
-        m_Engine = new Engine();
-        m_Menu = new Menu();
+         Engine m_Engine = new Engine();
+         Menu m_Menu = new Menu();
     }
+
 
     public void start() throws IOException, ActiveBranchDeleteExeption {
         m_Menu.printMenu();
@@ -24,9 +29,7 @@ public class UI {
         switch (i_UserChoice) {
             //Todo:Send the variables to the function.. now its just for checking.
             case 1:
-                // String Path = getRepositoryPath();
-                // String RepositoryName = getRepositoryName();
-                m_Engine.createNewRepository("C:\\Users\\ziv3r\\Desktop\\gitPractiseProject", "game");
+                //m_Engine.createNewRepository(getRepositoryPath(), getRepositoryName());
                 break;
 
             case 2:
@@ -34,7 +37,7 @@ public class UI {
                 m_Engine.createNewCommit(commitMessage);
                 break;
             case 3 :
-                String newBranchName = getBranchNameFromUser();
+                String newBranchName = getBranchName();
                 m_Engine.createNewBranch(newBranchName);
                 break;
                 //Todo talk with noam about handles exeptions
@@ -42,7 +45,7 @@ public class UI {
                 boolean succedToDelete = false ;
                 while(!succedToDelete){
                     try {
-                        String branchToDeleteName = getBranchNameToDelete();
+                        String branchToDeleteName = getBranchName();
                         m_Engine.deleteExistingBranch(branchToDeleteName);
                         succedToDelete=true;
                     }catch(ActiveBranchDeleteExeption ex ){
@@ -55,7 +58,7 @@ public class UI {
                 printAllBranchesData(allBranches);
                 break;
             case 6 :
-                String branchNametoCheckOut = getBranchNameForCheckOut();
+                String branchNametoCheckOut = getBranchName();
                 m_Engine.checkOutBranch(branchNametoCheckOut);
             case 7 :
                 String newUserName = getUserName();
@@ -78,8 +81,21 @@ public class UI {
     }
 
     //Todo implement printing ....
-    private void printSystemStatus(FileWalkResult fileStatus, String repositoryName, String repoPath) {
+    private void printSystemStatus(FileWalkResult i_FileStatus, String i_RepositoryName, String i_RepoPath) {
+        System.out.println("Repository: " + i_RepositoryName);
 
+        System.out.println("Deleted Files:" + System.lineSeparator());
+        printCollection(i_FileStatus.getCommitDelta().getDeletedFiles());
+
+        System.out.println(System.lineSeparator() + "Modified Files:" + System.lineSeparator());
+        printCollection(i_FileStatus.getCommitDelta().getModifiedFiles());
+
+        System.out.println(System.lineSeparator() + "New Files:" + System.lineSeparator());
+        printCollection(i_FileStatus.getCommitDelta().getNewFiles());
+    }
+
+    private void printCollection(Iterable i_Collection){
+        i_Collection.forEach(data -> System.out.println(data.toString()));
     }
 
     private String getUserName() {
@@ -96,45 +112,44 @@ public class UI {
         }
     }
 
-    private String getBranchNameToDelete() {
-        String branchNameToDelete;
+    private String getBranchName() {
+        String branchName = "";
         Scanner scanner = new Scanner(System.in);
-        System.out.println("please enter a branch name to delete");
 
-        branchNameToDelete = scanner.nextLine();
-
-        while(!m_Engine.checkBranchNameIsExist(branchNameToDelete)){
-            System.out.println("branch name doesn't exist, enter another name");
-            branchNameToDelete = scanner.nextLine();
-        }
-        return branchNameToDelete;
-    }
-
-    private String getBranchNameForCheckOut(){
-        String branchName;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("please enter a branch name");
-        branchName = scanner.nextLine();
 
         while(!m_Engine.checkBranchNameIsExist(branchName)){
-            System.out.println("please enter a branch name that exist");
+            System.out.println("please enter a branch name:");
             branchName = scanner.nextLine();
         }
+
         return branchName;
     }
 
-    private String getBranchNameFromUser() {
-        String branchName;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("please enter a branch name");
-        branchName = scanner.nextLine();
+//    private String getBranchNameForCheckOut(){
+//        String branchName;
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("please enter a branch name");
+//        branchName = scanner.nextLine();
+//
+//        while(!m_Engine.checkBranchNameIsExist(branchName)){
+//            System.out.println("please enter a branch name that exist");
+//            branchName = scanner.nextLine();
+//        }
+//        return branchName;
+//    }
 
-        while(m_Engine.checkBranchNameIsExist(branchName)){
-            System.out.println("please enter a branch name that doesn't exist");
-            branchName = scanner.nextLine();
-        }
-        return branchName;
-    }
+//    private String getBranchNameFromUser() {
+//        String branchName;
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("please enter a branch name");
+//        branchName = scanner.nextLine();
+//
+//        while(m_Engine.checkBranchNameIsExist(branchName)){
+//            System.out.println("please enter a branch name that doesn't exist");
+//            branchName = scanner.nextLine();
+//        }
+//        return branchName;
+//    }
 
     //--------------------------------------S methods create new repository-----------------------------
 
@@ -154,11 +169,18 @@ public class UI {
 
     private String getRepositoryPath() {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Please enter a legal path to create new repository");
-        String repPath = scanner.nextLine();  // Read path input
-        Path path = Paths.get(repPath);
+        String repPath = "";
 
-        return path.toString();
+        while(repPath.isEmpty()) {
+            System.out.println("Please enter a legal path to create new repository");
+            repPath = scanner.nextLine();  // Read path input
+            try { Paths.get(repPath); }
+            catch (InvalidPathException e){
+                repPath = "";
+            }
+        }
+
+        return repPath;
     }
 
     //--------------------------------------E methods create new repository-----------------------------

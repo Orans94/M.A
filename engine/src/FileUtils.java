@@ -8,6 +8,7 @@ import java.util.zip.ZipOutputStream;
 
 public class FileUtils
 {
+    public static final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
     public static void CreateAndWriteTxtFile(Path i_Path, String i_Content) throws IOException {
         Files.createFile(i_Path);
         Files.write(i_Path, i_Content.getBytes());

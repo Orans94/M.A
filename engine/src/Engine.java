@@ -5,12 +5,12 @@ import java.util.List;
 
 public class Engine {
     private static String s_ActiveUser = "admin";
+    private Repository m_Repository;
+
 
     public Repository getRepository() {
         return m_Repository;
     }
-
-    private Repository m_Repository;
 
     public static String getActiveUser() {
         return s_ActiveUser;
@@ -59,7 +59,13 @@ public class Engine {
 
 
     public boolean isDirectoryNameValid(String repositoryName) {
-        return true;
+        for(char toCheck : FileUtils.ILLEGAL_CHARACTERS)
+        {
+            if (repositoryName.contains(String.valueOf(toCheck)))
+                return false;
+        }
+
+        return repositoryName != "";
     }
 
     public List<BranchInformation> showAllBranches() {

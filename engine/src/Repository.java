@@ -198,7 +198,7 @@ public class Repository {
     private void PathDoesnotExist(FileWalkResult i_fileWalkResult, Path i_FilePath, String i_NodeSha1, Node i_NewNode) {
         i_fileWalkResult.getFilesToZip().getFilePathToSha1().put(i_FilePath, i_NodeSha1);
         i_fileWalkResult.getFilesToZip().getSha1FileToNode().put(i_NodeSha1, i_NewNode);
-        i_fileWalkResult.getCommitDelta().m_ListNewFiles.add(i_FilePath);
+        i_fileWalkResult.getCommitDelta().getNewFiles().add(i_FilePath);
     }
 
     private void pathExistCheckIfModify(FileWalkResult i_fileWalkResult, Path i_FilePath, String i_NodeSha1, Node i_NewNode) {
@@ -208,7 +208,7 @@ public class Repository {
         } else {
             i_fileWalkResult.getFilesToZip().getFilePathToSha1().put(i_FilePath, i_NodeSha1);
             i_fileWalkResult.getFilesToZip().getSha1FileToNode().put(i_NodeSha1, i_NewNode);
-            i_fileWalkResult.getCommitDelta().m_ListModifiedFiles.add(i_FilePath);
+            i_fileWalkResult.getCommitDelta().getModifiedFiles().add(i_FilePath);
         }
     }
 
@@ -258,7 +258,7 @@ public class Repository {
             }
         }
 
-        walkTreeResult.getCommitDelta().m_ListDeletedFiles = allPathsFromLastCommit;
+        walkTreeResult.getCommitDelta().setDeletedFiles(allPathsFromLastCommit);
     }
 
     //-----------------------------------E make commit--------------------------------//
@@ -275,8 +275,6 @@ public class Repository {
             throw new ActiveBranchDeleteExeption();
 
         m_Magit.deleteExistingBranch(i_BranchToDeleteName);
-
-
     }
 
     //---------------------------------S Check Out--------------------------------
