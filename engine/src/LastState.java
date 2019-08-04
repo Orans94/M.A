@@ -31,4 +31,8 @@ public class LastState {
             currentNode.toString();
         }
     }
+
+    public void uploadAllNodesFromNewRepositoryLastState(String i_repositoryPath) {
+
+    }
 }

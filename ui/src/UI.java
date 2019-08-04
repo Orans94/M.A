@@ -87,10 +87,17 @@ public class UI {
                 String repoPath = m_Engine.getRepository().getM_Path().toString();
                 printSystemStatus(fileStatus, repositoryName, repoPath);
                 break;
+            case 11 :
+                String repositoryPath = getRepositoryPath();
+                while(!m_Engine.checkIfRepository(repositoryPath)){
+                    System.out.println("please enter a valid path of repository");
+                    repositoryPath = getRepositoryPath();
+                }
+                m_Engine.switchRepositories(repositoryPath);
+
+
         }
     }
-
-    //Todo implement printing ....
     private void printSystemStatus(FileWalkResult i_FileStatus, String i_RepositoryName, String i_RepoPath) {
         System.out.println("Repository: " + i_RepositoryName);
 
@@ -220,3 +227,7 @@ public class UI {
 
 //XML ........
 
+//importans questions :
+//1. repository name ?!!??!
+//2. commits that down need and how to go there ?
+//3. XML explanations !?

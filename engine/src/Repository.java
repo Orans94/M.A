@@ -308,12 +308,12 @@ public class Repository {
     private void updateSystemData(String branchNametoCheckOut, String i_RootSha1) throws IOException {
         m_LastState.clearAll();
         Branch activeBranch = m_Magit.getBranches().get(branchNametoCheckOut);
-        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(getStringFromFolderZip(i_RootSha1)));
+        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(FileUtils.getStringFromFolderZip(i_RootSha1)));
         m_Magit.getHead().setActiveBranch(activeBranch);
     }
 
     private void updateWcFromCommit(Path path, String currentSha1) throws IOException {
-        String zipContext = getStringFromFolderZip(currentSha1);
+        String zipContext = FileUtils.getStringFromFolderZip(currentSha1);
         String[] lines = zipContext.split(System.lineSeparator());
         for (String line : lines) {
             String fileType = getTypeFromLine(line);
@@ -332,7 +332,7 @@ public class Repository {
                 Files.createDirectory(path.resolve(dirName));
                 updateWcFromCommit(path.resolve(dirName),getSha1FromLine(line));
                 String folderSha1 = getSha1FromItemString(line);
-                String fodlerContent = getStringFromFolderZip(folderSha1);
+                String fodlerContent = FileUtils.getStringFromFolderZip(folderSha1);
                 m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), folderSha1, new Folder(fodlerContent));
             }
         }
@@ -353,24 +353,6 @@ public class Repository {
         return members[2];
     }
 
-    private String getStringFromFolderZip(String i_currentSha1) throws IOException {
-        String currentFileContent;
-
-        ZipFile zipFile = new ZipFile(m_Magit.getObjectsPath().resolve(i_currentSha1 + ".zip").toString());
-        ZipEntry zipEntry = zipFile.getEntry(i_currentSha1 + ".txt");
-
-        InputStream inputStream =   zipFile.getInputStream(zipEntry);
-
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
-        }
-        currentFileContent = result.toString("UTF-8");
-        return currentFileContent;
-
-    }
 
     public void deleteCurrentWc() throws IOException {
         FileVisitor<Path> fv = new FileVisitor<Path>() {
@@ -415,6 +397,23 @@ public class Repository {
         FileWalkResult walkTreeResult = FileWalkTree();
         FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
         return walkTreeResult;
+    }
+
+    public void switchRepositories(String i_RepositoryPath) throws IOException {
+        //0. update repository details
+        m_Path = Paths.get(i_RepositoryPath);
+        m_Name = m_Path.toFile().getName();
+
+        //1.delete all the from system
+        m_Magit.initalize();
+        m_LastState.clearAll();
+
+        //2.upload commits from new repository
+        //3.upload all branches from new repository
+        m_Magit.updateCommitsAndBranchesFromNewRepository(i_RepositoryPath);
+
+        //4.upload all nodes of last commit(pull from head -> branch -> last commit sha1)
+        m_LastState.uploadAllNodesFromNewRepositoryLastState(i_RepositoryPath);
     }
 
     //---------------------------------S Check Out--------------------------------

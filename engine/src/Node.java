@@ -12,11 +12,10 @@ abstract public class Node {
     }
 
     protected String Commit(Path i_Path) throws IOException {
-        String Sha1String;
         //this method is returning the sha-1 of the Node's content
         // it also makes a zip of the file, put it in objects folder and the name of it will be the sha1
         //1. SHA-1 the file.
-        Sha1String = SHA1();
+        String Sha1String = SHA1();
         //2. ZIP the file.
         Zip(Sha1String, i_Path);
         //3. save it in objects.

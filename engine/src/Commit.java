@@ -12,6 +12,14 @@ public class Commit<pubic> {
     private Date m_CommitDate;
     private CommitDelta m_CommitDelta;
 
+    public Commit(String i_RootFolderSha1, Commit i_Parent, String i_Message,String i_Date ,String i_UserName)
+    {
+        m_RootFolderSha1 = i_RootFolderSha1;
+        m_Parent = i_Parent;
+        m_Message = i_Message;
+        m_CommitDate = DateUtils.FormatToDate(i_Date);
+        m_CommitAuthor = i_UserName;
+    }
     public Commit(String i_RootFolderSha1, Commit i_Parent, String i_Message, CommitDelta i_CommitDelta) {
         m_RootFolderSha1 = i_RootFolderSha1;
         m_Parent = i_Parent;

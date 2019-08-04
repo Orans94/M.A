@@ -1,6 +1,5 @@
 import java.io.*;
 import java.nio.file.*;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Engine {
@@ -92,6 +91,16 @@ public class Engine {
         }
 
         return repositoryName != "";
+    }
+
+    public boolean checkIfRepository(String repositoryPath) {
+        
+        return false;
+    }
+
+    public void switchRepositories(String repositoryPath) {
+        m_Repository.switchRepositories();
+
     }
 }
 

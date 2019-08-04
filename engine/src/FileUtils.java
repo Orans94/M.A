@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -82,6 +83,29 @@ public class FileUtils
     public static void deleteFile(Path i_FileToDelte) throws IOException {
         Files.delete(i_FileToDelte);
     }
+
+    public static String readFileAndReturnString(Path filePath) throws IOException {
+        return new String(Files.readAllBytes(filePath));
+    }
+
+    public static String getStringFromFolderZip(String i_zipFileName) throws IOException {
+        String currentFileContent;
+
+        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName+ ".zip").toString());
+        ZipEntry zipEntry = zipFile.getEntry(i_zipFileName + ".txt");
+
+        InputStream inputStream =   zipFile.getInputStream(zipEntry);
+
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        currentFileContent = result.toString("UTF-8");
+        return currentFileContent;
+    }
 }
+
 
 
