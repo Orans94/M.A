@@ -6,7 +6,7 @@ public class Engine {
     private static String s_ActiveUser = "admin";
     private Repository m_Repository;
 
-
+    //-------------------------------------S Properties--------------------------//
     public Repository getRepository() {
         return m_Repository;
     }
@@ -14,14 +14,18 @@ public class Engine {
     public static String getActiveUser() {
         return s_ActiveUser;
     }
+    //-------------------------------------E Properties--------------------------//
 
-    public boolean checkBranchNameIsExist(String i_BranchName) {
-        return m_Repository.getMagit().checkIfBranchNameIsExist(i_BranchName);
+
+    //--------------------------E Active User Name-------------------------------//
+    public void changeActiveUserName(String i_NewUserName) {
+        s_ActiveUser = i_NewUserName;
     }
+    //--------------------------E Active User Name-------------------------------//
 
-    //------------------S create new repository -----------------------------------
+    //------------------S create new repository and switch  -----------------------------------
     public void createNewRepository(String i_PathToCreateRepository, String i_RepositoryName) throws IOException {
-        Path pathOfNewRepository = Paths.get(i_PathToCreateRepository).resolve(i_RepositoryName);
+        Path pathOfNewRepository = Paths.get(i_PathToCreateRepository); //.resolve(i_RepositoryName);
         Path repoPath = pathOfNewRepository;
 
         try {
@@ -35,19 +39,36 @@ public class Engine {
             e.printStackTrace();
         }
         //to check if i need the path with the repo name or not ?!
-
-        m_Repository = new Repository(i_RepositoryName, repoPath);
+        m_Repository = new Repository(i_RepositoryName, repoPath,true);
+        FileUtils.CreateAndWriteTxtFile(repoPath.resolve(".magit").resolve("repositoryName.txt"),i_RepositoryName);
 
         //Todo:delete down.
         Files.createFile(repoPath.resolve("hello.txt"));
         Files.write(repoPath.resolve("hello.txt"), "hello world".getBytes());
     }
-    //------------------E create new repository -----------------------------------
+
+    public boolean checkIfRepository(String repositoryPath) {
+        repositoryPath = repositoryPath.concat("\\.magit");
+        File magitFile = new File(repositoryPath);
+        return magitFile.exists();
+    }
+
+    public void switchRepositories(String repositoryPath,boolean isNewRepo) throws IOException {
+        m_Repository = new Repository("temp" ,Paths.get(repositoryPath),isNewRepo);
+        m_Repository.uploadOrswitchRepositories(repositoryPath);
+    }
+    //------------------E create new repository and switch-----------------------------------
+
+
+    public boolean checkBranchNameIsExist(String i_BranchName) {
+        return m_Repository.getMagit().checkIfBranchNameIsExist(i_BranchName);
+    }
 
     public void createNewCommit(String i_Message) throws IOException {
         m_Repository.createCommit(i_Message);
     }
 
+    //------------------S Branches commands-----------------------------------
     public void createNewBranch(String i_BranchName) throws IOException {
         m_Repository.createNewBranch(i_BranchName);
     }
@@ -57,20 +78,14 @@ public class Engine {
                 (branchToDeleteName);
     }
 
-
     public List<BranchInformation> showAllBranches() {
         return m_Repository.getMagit().getAllBarnchesInSystem();
     }
 
     public void checkOutBranch(String branchNametoCheckOut) throws IOException {
-        //1.delete all the current wc
         m_Repository.checkOut(branchNametoCheckOut);
-
     }
-
-    public void changeActiveUserName(String i_NewUserName) {
-        s_ActiveUser = i_NewUserName;
-    }
+    //------------------S Branches commands-----------------------------------
 
     public void showAllFilesPointsFromLastCommit() {
         m_Repository.getLastState().showAllFilesFromActiveBranch();
@@ -84,7 +99,7 @@ public class Engine {
         return m_Repository.getStatus();
     }
 
-    public boolean isDirectoryNameValid (String repositoryName){
+    public boolean isDirectoryNameValid(String repositoryName) {
         for (char toCheck : FileUtils.ILLEGAL_CHARACTERS) {
             if (repositoryName.contains(String.valueOf(toCheck)))
                 return false;
@@ -93,15 +108,6 @@ public class Engine {
         return repositoryName != "";
     }
 
-    public boolean checkIfRepository(String repositoryPath) {
-        
-        return false;
-    }
-
-    public void switchRepositories(String repositoryPath) {
-        m_Repository.switchRepositories();
-
-    }
 }
 
 

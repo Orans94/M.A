@@ -11,16 +11,19 @@ public class Magit {
     private Head m_Head;
 
 
-    public Magit(Path i_magitPath) throws IOException {
-        //m_Nodes = new HashMap<>();          //what should it hold?
+    public Magit(Path i_magitPath,boolean newRepo) throws IOException {
         m_Commits = new HashMap<>();
         m_Branches = new HashMap<>();
         s_MagitPath = i_magitPath;       //to check static initalizer.
-        Branch br = new Branch("master", null);
-        m_Branches.put("master", br);
-        createHeadAndMasterBranchFiles();
-        m_Head = new Head(br);
         s_ObjectsPath = s_MagitPath.resolve("objects");
+
+        if(newRepo == true){
+            Branch br = new Branch("master", null);
+            m_Branches.put("master", br);
+            createHeadAndMasterBranchFiles();
+            m_Head = new Head(br);
+        }
+
     }
 
     public Map<String, Commit> getCommits() {

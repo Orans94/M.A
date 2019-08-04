@@ -18,41 +18,42 @@ public class Repository {
     private Magit m_Magit;
     private static List<String> m_ChildrenInformation;
 
+    public Repository(String i_Name, Path i_RepoPath,boolean isNewRepo) throws IOException {
+        m_Path = i_RepoPath;
+        m_Name = i_Name;
+        m_LastState = new LastState(m_Path);
+        m_Magit = new Magit(getMatgitPath(),isNewRepo);
+        m_ChildrenInformation = new LinkedList<>();
+    }
+
+
+    //---------------------------------------S Properties-----------------------//
     public LastState getLastState() {
         return m_LastState;
     }
 
-    public String getM_Name() {
+    public String getName() {
         return m_Name;
     }
 
-    public Path getM_Path() {
+    public Path getPath() {
         return m_Path;
     }
 
-
-
-    public Repository(String i_Name, Path i_RepoPath) throws IOException {
-        m_Path = i_RepoPath;
-        m_Name = i_Name;
-        m_LastState = new LastState(m_Path);
-        m_Magit = new Magit(getMatgitPath());
-        m_ChildrenInformation = new LinkedList<>();
-    }
-
-    public Path getMatgitPath() {
-        return m_Path.resolve(".magit");
-    }
-
-    //--------------------S properties-----------------------
     public Magit getMagit() {
         return m_Magit;
     }
     //--------------------E properties-----------------------
 
+
+    public Path getMatgitPath() {
+        return m_Path.resolve(".magit");
+    }
+
     //-----------------------------------S make commit--------------------------------//
 
     public void createCommit(String i_message) throws IOException {
+        //this two lines find
         FileWalkResult walkTreeResult = FileWalkTree();
         FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
         //there were no changes
@@ -268,7 +269,6 @@ public class Repository {
         m_Magit.createNewBranch(i_branchName);
     }
 
-
     public void deleteExistingBranch(String i_BranchToDeleteName) throws ActiveBranchDeleteExeption, IOException {
 
         if (i_BranchToDeleteName.equals(m_Magit.getHead().getActiveBranch().getBracnhName()))
@@ -399,12 +399,13 @@ public class Repository {
         return walkTreeResult;
     }
 
-    public void switchRepositories(String i_RepositoryPath) throws IOException {
+    public void uploadOrswitchRepositories(String i_RepositoryPath) throws IOException {
         //0. update repository details
-        m_Path = Paths.get(i_RepositoryPath);
-        m_Name = m_Path.toFile().getName();
+        //take the name of the repository from repository naem
+        Path repoName = m_Path.resolve(".magit").resolve("repositoryName.txt");
+        this.m_Name = FileUtils.readFileAndReturnString(repoName);
 
-        //1.delete all the from system
+        //1.delete all the data from system
         m_Magit.initalize();
         m_LastState.clearAll();
 

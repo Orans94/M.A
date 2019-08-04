@@ -27,22 +27,31 @@ public class UI {
         switch (i_UserChoice) {
             //Todo:Send the variables to the function.. now its just for checking.
             case 1:
-                // String Path = getRepositoryPath();
-                // String RepositoryName = getRepositoryName();
-                m_Engine.createNewRepository("C:\\Users\\noamlevy\\Desktop\\דברים", "test");
-                //m_Engine.createNewRepository(getRepositoryPath(), getRepositoryName());
+                String newUserName = getUserName();
+                m_Engine.changeActiveUserName(newUserName);
                 break;
 
             case 2:
-                String commitMessage = getCommitMessageFromUser();
-                m_Engine.createNewCommit(commitMessage);
+                //handle xml and all this shit......
                 break;
+
             case 3:
+                // String Path = getRepositoryPath();
+                // String RepositoryName = getRepositoryName();
+                //m_Engine.createNewRepository(getRepositoryPath(), getRepositoryName());
+                m_Engine.createNewRepository("C:\\Users\\ziv3r\\Desktop\\\\newRepo", "repo");
+                break;
+
+            case 4:
+                m_Engine.switchRepositories(getValidExistingRepositoryPath(),false);
+                break;
+
+            case 5:
                 String newBranchName = getBranchNameFromUser(); // we have 2 methods with different condition
                 m_Engine.createNewBranch(newBranchName);
                 break;
-            //Todo talk with noam about handles exeptions
-            case 4:
+
+            case 6:
                 boolean succedToDelete = false;
                 while (!succedToDelete) {
                     try {
@@ -54,11 +63,13 @@ public class UI {
                     }
                 }
                 break;
-            case 5:
+
+            case 7:
                 List<BranchInformation> allBranches = m_Engine.showAllBranches();
                 printAllBranchesData(allBranches);
                 break;
-            case 6:
+
+            case 8:
                 String branchNametoCheckOut = getBranchName();
                 if (!m_Engine.getRepository().isWcClean()) {
                     System.out.println("There are unsaved changes, would you like to commit first?");
@@ -70,34 +81,83 @@ public class UI {
                 m_Engine.checkOutBranch(branchNametoCheckOut);
                 printCollection(m_Engine.getRepository().getLastState().getLastCommitInformation().getFilePathToSha1().values());
                 break;
-            case 7:
-                String newUserName = getUserName();
-                m_Engine.changeActiveUserName(newUserName);
-                break;
-            case 8:
+
+            case 9:
                 m_Engine.showAllFilesPointsFromLastCommit();
                 break;
-            case 9:
+
+            case 10:
                 m_Engine.showActiveBranchHistory();
                 break;
-            case 10:
-                //show the opennig chagnes between current working copy and last commit.
+
+            case 11:
+                //show the open changes between current working copy and last commit.
                 FileWalkResult fileStatus = m_Engine.showStatus();
-                String repositoryName = m_Engine.getRepository().getM_Name();
-                String repoPath = m_Engine.getRepository().getM_Path().toString();
+                String repositoryName = m_Engine.getRepository().getName();
+                String repoPath = m_Engine.getRepository().getPath().toString();
                 printSystemStatus(fileStatus, repositoryName, repoPath);
                 break;
-            case 11 :
-                String repositoryPath = getRepositoryPath();
-                while(!m_Engine.checkIfRepository(repositoryPath)){
-                    System.out.println("please enter a valid path of repository");
-                    repositoryPath = getRepositoryPath();
-                }
-                m_Engine.switchRepositories(repositoryPath);
 
-
+            case 12:
+                String commitMessage = getCommitMessageFromUser();
+                m_Engine.createNewCommit(commitMessage);
+                break;
         }
     }
+
+    //----------------------------------S chagne user Name - task1----------------------------------
+    private String getUserName() {
+        String userName;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("please enter user name");
+        userName = scanner.nextLine();
+        return userName;
+    }
+    //----------------------------------E chagne user Name - task1----------------------------------
+
+    //----------------------------------S first Bounous and chagne repositories user Name - task1----------------------------------
+    private String getRepositoryName() {
+         /*
+        //TODO describe the prohibited symbols in folder name , check if needed and how.
+        while (!m_Engine.isDirectoryNameValid(repositoryName)) {
+            System.out.println("Invalid repository name, Please enter a legal repository name");
+            repositoryName = scanner.nextLine();
+        }*/
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter repository name");
+        String repositoryName = scanner.nextLine();
+        return repositoryName;
+    }
+
+    private String getRepositoryPath() {
+        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
+        String repoPath = "";
+
+        while (repoPath.isEmpty()) {
+            System.out.println("Please enter a legal repository path");
+            repoPath = scanner.nextLine();  // Read path input
+            try {
+                Paths.get(repoPath);
+            } catch (InvalidPathException e) {
+                repoPath = "";
+            }
+        }
+        return repoPath;
+    }
+
+    private String getValidExistingRepositoryPath() {
+        String repositoryPath = "";
+        repositoryPath = getRepositoryPath();
+
+        while (!m_Engine.checkIfRepository(repositoryPath)) {
+            System.out.println("please enter an existing path of repository");
+            repositoryPath = getRepositoryPath();
+        }
+        return repositoryPath;
+    }
+    //----------------------------------E first Bounous and chagne repositories user Name - task1----------------------------------
+
+
     private void printSystemStatus(FileWalkResult i_FileStatus, String i_RepositoryName, String i_RepoPath) {
         System.out.println("Repository: " + i_RepositoryName);
 
@@ -113,14 +173,6 @@ public class UI {
 
     private void printCollection(Iterable i_Collection) {
         i_Collection.forEach(data -> System.out.println(data.toString()));
-    }
-
-    private String getUserName() {
-        String userName;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("please enter user name");
-        userName = scanner.nextLine();
-        return userName;
     }
 
     private void printAllBranchesData(List<BranchInformation> allBranches) {
@@ -161,7 +213,7 @@ public class UI {
         System.out.println("please enter a branch name");
         branchName = scanner.nextLine();
 
-        while(m_Engine.checkBranchNameIsExist(branchName)){
+        while (m_Engine.checkBranchNameIsExist(branchName)) {
             System.out.println("please enter a branch name that doesn't exist");
             branchName = scanner.nextLine();
         }
@@ -170,36 +222,6 @@ public class UI {
 
     //--------------------------------------S methods create new repository-----------------------------
 
-    private String getRepositoryName() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter repository name");
-        String repositoryName = scanner.nextLine();
-
-        //TODO describe the prohibited symbols in folder name
-        while (!m_Engine.isDirectoryNameValid(repositoryName)) {
-            System.out.println("Invalid repository name, Please enter a legal repository name");
-            repositoryName = scanner.nextLine();
-        }
-
-        return repositoryName;
-    }
-
-    private String getRepositoryPath() {
-        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-        String repPath = "";
-
-        while (repPath.isEmpty()) {
-            System.out.println("Please enter a legal path to create new repository");
-            repPath = scanner.nextLine();  // Read path input
-            try {
-                Paths.get(repPath);
-            } catch (InvalidPathException e) {
-                repPath = "";
-            }
-        }
-
-        return repPath;
-    }
 
     //--------------------------------------E methods create new repository-----------------------------
 
