@@ -2,7 +2,6 @@ import javafx.scene.Parent;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -25,7 +24,6 @@ public class UI {
 
     private void handleUserChoice(int i_UserChoice) throws IOException, ActiveBranchDeleteExeption {
         switch (i_UserChoice) {
-            //Todo:Send the variables to the function.. now its just for checking.
             case 1:
                 String newUserName = getUserName();
                 m_Engine.changeActiveUserName(newUserName);
@@ -36,41 +34,59 @@ public class UI {
                 break;
 
             case 3:
+                //Todo:Send the variables to the function.. now its just for checking.
                 // String Path = getRepositoryPath();
                 // String RepositoryName = getRepositoryName();
                 //m_Engine.createNewRepository(getRepositoryPath(), getRepositoryName());
-                m_Engine.createNewRepository("C:\\Users\\ziv3r\\Desktop\\\\newRepo", "repo");
+                //m_Engine.createNewRepository("C:\\Users\\ziv3r\\Desktop\\newReposforSwitch","newRepo");
+                m_Engine.createNewRepository("C:\\Users\\ziv3r\\Desktop\\newRepo", "newRepo");
                 break;
 
             case 4:
-                m_Engine.switchRepositories(getValidExistingRepositoryPath(),false);
+                m_Engine.changeRepositories(getValidExistingRepositoryPath(), false);
                 break;
 
             case 5:
-                String newBranchName = getBranchNameFromUser(); // we have 2 methods with different condition
-                m_Engine.createNewBranch(newBranchName);
+                //Todo - add information about root folder ?!
+                m_Engine.showAllFilesPointsFromLastCommit();
                 break;
 
             case 6:
-                boolean succedToDelete = false;
-                while (!succedToDelete) {
-                    try {
-                        String branchToDeleteName = getBranchName();
-                        m_Engine.deleteExistingBranch(branchToDeleteName);
-                        succedToDelete = true;
-                    } catch (ActiveBranchDeleteExeption ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
+                //show the open changes between current working copy and last commit.
+                FileWalkResult fileStatus = m_Engine.showStatus();
+                String repositoryName = m_Engine.getRepository().getName();
+                String repoPath = m_Engine.getRepository().getPath().toString();
+                printSystemStatus(fileStatus, repositoryName, repoPath);
                 break;
 
             case 7:
+                String commitMessage = getCommitMessageFromUser();
+                m_Engine.createNewCommit(commitMessage);
+                break;
+
+            case 8:
                 List<BranchInformation> allBranches = m_Engine.showAllBranches();
                 printAllBranchesData(allBranches);
                 break;
 
-            case 8:
-                String branchNametoCheckOut = getBranchName();
+            case 9:
+                String newBranchName = getBranchNameFromUser(); // we have 2 methods with different condition
+                m_Engine.createNewBranch(newBranchName);
+                break;
+
+            case 10:
+                boolean succedToDelete = false;
+                try {
+                    String branchToDeleteName = getExistBranchName();
+                    m_Engine.deleteExistingBranch(branchToDeleteName);
+                    succedToDelete = true;
+                } catch (ActiveBranchDeleteExeption ex) {
+                    System.out.println(ex.getMessage());
+                }
+                break;
+
+            case 11:
+                String branchNametoCheckOut = getExistBranchName();
                 if (!m_Engine.getRepository().isWcClean()) {
                     System.out.println("There are unsaved changes, would you like to commit first?");
                     Scanner scanner = new Scanner(System.in);
@@ -82,27 +98,17 @@ public class UI {
                 printCollection(m_Engine.getRepository().getLastState().getLastCommitInformation().getFilePathToSha1().values());
                 break;
 
-            case 9:
-                m_Engine.showAllFilesPointsFromLastCommit();
-                break;
-
-            case 10:
+            case 12:
                 m_Engine.showActiveBranchHistory();
                 break;
-
-            case 11:
-                //show the open changes between current working copy and last commit.
-                FileWalkResult fileStatus = m_Engine.showStatus();
-                String repositoryName = m_Engine.getRepository().getName();
-                String repoPath = m_Engine.getRepository().getPath().toString();
-                printSystemStatus(fileStatus, repositoryName, repoPath);
-                break;
-
-            case 12:
-                String commitMessage = getCommitMessageFromUser();
-                m_Engine.createNewCommit(commitMessage);
+            case 13:
+                exitSystem();
                 break;
         }
+    }
+
+    private void exitSystem() {
+        System.exit(0);
     }
 
     //----------------------------------S chagne user Name - task1----------------------------------
@@ -157,18 +163,30 @@ public class UI {
     }
     //----------------------------------E first Bounous and chagne repositories user Name - task1----------------------------------
 
-
     private void printSystemStatus(FileWalkResult i_FileStatus, String i_RepositoryName, String i_RepoPath) {
+        boolean isChanges = false;
+        System.out.println("Repository Path:" + i_RepoPath);
         System.out.println("Repository: " + i_RepositoryName);
 
-        System.out.println("Deleted Files:" + System.lineSeparator());
-        printCollection(i_FileStatus.getCommitDelta().getDeletedFiles());
+        if (i_FileStatus.getCommitDelta().getDeletedFiles().size() > 0) {
+            System.out.println("Deleted Files:");
+            printCollection(i_FileStatus.getCommitDelta().getDeletedFiles());
+            isChanges = true;
+        }
+        if (i_FileStatus.getCommitDelta().getModifiedFiles().size() > 0) {
+            System.out.println("Modified Files:" + System.lineSeparator());
+            printCollection(i_FileStatus.getCommitDelta().getModifiedFiles());
+            isChanges = true;
+        }
+        if (i_FileStatus.getCommitDelta().getNewFiles().size() > 0) {
+            System.out.println("New Files:" + System.lineSeparator());
+            printCollection(i_FileStatus.getCommitDelta().getNewFiles());
+            isChanges = true;
+        }
 
-        System.out.println(System.lineSeparator() + "Modified Files:" + System.lineSeparator());
-        printCollection(i_FileStatus.getCommitDelta().getModifiedFiles());
-
-        System.out.println(System.lineSeparator() + "New Files:" + System.lineSeparator());
-        printCollection(i_FileStatus.getCommitDelta().getNewFiles());
+        if (!isChanges) {
+            System.out.println("There were no changes at all");
+        }
     }
 
     private void printCollection(Iterable i_Collection) {
@@ -180,20 +198,6 @@ public class UI {
             System.out.println(brancInformation.toString());
         }
     }
-
-    private String getBranchName() {
-        String branchName = "";
-        Scanner scanner = new Scanner(System.in);
-
-
-        while (!m_Engine.checkBranchNameIsExist(branchName)) {
-            System.out.println("please enter a branch name:");
-            branchName = scanner.nextLine();
-        }
-
-        return branchName;
-    }
-
 //    private String getBranchNameForCheckOut(){
 //        String branchName;
 //        Scanner scanner = new Scanner(System.in);
@@ -207,6 +211,19 @@ public class UI {
 //        return branchName;
 //    }
 
+    //for delete and for checkout (need to be exist).
+    private String getExistBranchName() {
+        String branchName = "";
+        Scanner scanner = new Scanner(System.in);
+
+        while (!m_Engine.checkBranchNameIsExist(branchName)) {
+            System.out.println("please enter an exist branch name:");
+            branchName = scanner.nextLine();
+        }
+        return branchName;
+    }
+
+    //for add new branch
     private String getBranchNameFromUser() {
         String branchName;
         Scanner scanner = new Scanner(System.in);
@@ -241,15 +258,10 @@ public class UI {
 //3.make m_MagitPath , m_Activeuser non static.
 //4.change item typeHolder to be file and not Blob !! (folder content).
 //5.think where and to handle all the exceptions.
-//6.does the head always point to the branch that on system ?
-//7.it needs to be an option to change repository name(look mail quesion .. i didnt get into it ..)
-
-// big two issues
-//6.load new repository to the system using existings methods.
 
 //XML ........
 
 //importans questions :
-//1. repository name ?!!??!
 //2. commits that down need and how to go there ?
 //3. XML explanations !?
+//4.remmber this commit delta - think about it with noam ...

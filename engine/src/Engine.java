@@ -53,7 +53,7 @@ public class Engine {
         return magitFile.exists();
     }
 
-    public void switchRepositories(String repositoryPath,boolean isNewRepo) throws IOException {
+    public void changeRepositories(String repositoryPath,boolean isNewRepo) throws IOException {
         m_Repository = new Repository("temp" ,Paths.get(repositoryPath),isNewRepo);
         m_Repository.uploadOrswitchRepositories(repositoryPath);
     }

@@ -6,44 +6,42 @@ import java.util.Date;
 
 public class Commit<pubic> {
     private String m_RootFolderSha1;
-    private Commit m_Parent;
+    private String m_Parent;
     private String m_Message;
     private String m_CommitAuthor;
-    private Date m_CommitDate;
-    private CommitDelta m_CommitDelta;
+    private String  m_CommitDate;
 
-    public Commit(String i_RootFolderSha1, Commit i_Parent, String i_Message, String i_Date, String i_UserName) {
+    //Todo - remmber this commit delta - think about it with noam ...
+    //private CommitDelta m_CommitDelta;
+
+    public Commit(String i_RootFolderSha1, String i_ParentSha1, String i_Message, String i_Date, String i_UserName) {
         m_RootFolderSha1 = i_RootFolderSha1;
-        m_Parent = i_Parent;
+        m_Parent = i_ParentSha1;
         m_Message = i_Message;
-        m_CommitDate = DateUtils.FormatToDate(i_Date);
+        m_CommitDate = i_Date;
         m_CommitAuthor = i_UserName;
     }
-
-    public Commit(String i_RootFolderSha1, Commit i_Parent, String i_Message, CommitDelta i_CommitDelta) {
+//CommitDelta i_CommitDelta)
+    public Commit(String i_RootFolderSha1, String i_ParentSha1, String i_Message){
         m_RootFolderSha1 = i_RootFolderSha1;
-        m_Parent = i_Parent;
+        m_Parent = i_ParentSha1;
         m_Message = i_Message;
         m_CommitAuthor = Engine.getActiveUser();
-        m_CommitDate = new Date();
-        m_CommitDelta = i_CommitDelta;
+        m_CommitDate = DateUtils.dateToString(new Date());
+        //m_CommitDelta = i_CommitDelta;
     }
 
     public String getRootFolderSha1() {
         return m_RootFolderSha1;
     }
 
-
     @Override
     public String toString() {
         return
                 "" + m_RootFolderSha1 + ','
-                        + m_Parent + ','
                         + m_Message + ','
                         + m_CommitDate.toString() + ','
                         + m_CommitAuthor;
-        //Todo add all the commit delta information to toString.
-        //  + ', + m_CommitDelta.
     }
 
     public String generateSha1() {
@@ -60,7 +58,7 @@ public class Commit<pubic> {
         return m_Message;
     }
 
-    public Commit getParent() {
+    public String getParent() {
         return m_Parent;
     }
 }

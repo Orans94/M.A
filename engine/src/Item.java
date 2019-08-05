@@ -21,7 +21,7 @@ public class Item {
                 m_SHA1 + ',' +
                 m_Type + ',' +
                 m_Modifier + ',' +
-                DateUtils.FormatToString(m_ModificationDate);
+                DateUtils.dateToString(m_ModificationDate);
     }
 
 

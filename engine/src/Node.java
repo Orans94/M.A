@@ -35,6 +35,6 @@ abstract public class Node {
                 i_Sha1 + "," +
                 this.getClass().getSimpleName() + "," +
                 Engine.getActiveUser() + "," +
-                DateUtils.FormatToString(new Date()) + System.lineSeparator();
+                DateUtils.dateToString(new Date()) + System.lineSeparator();
     }
 }

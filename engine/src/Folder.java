@@ -28,12 +28,7 @@ public class Folder extends Node {
 
     @Override
     public String toString() {
-        String content = "";
-        for (Item item : m_Items) {
-            content = content.concat(item.toString()).concat(System.lineSeparator());
-        }
-
-        return content;
+        return m_Content;
     }
 
     public void createItemListFromContent() {

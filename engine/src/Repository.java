@@ -215,7 +215,7 @@ public class Repository {
 
     private void updateCommitsAndBranches(String i_RootFolderSha1, String i_message, CommitDelta i_CommitDeltaFromWalkTree) throws IOException {
         //1.create new commit and point the head to the new commit
-        m_Magit.handleNewCommit(i_RootFolderSha1, i_message, i_CommitDeltaFromWalkTree);
+        m_Magit.handleNewCommit(i_RootFolderSha1, i_message);
     }
 
     //Think if to move this to file.utils??
@@ -301,7 +301,6 @@ public class Repository {
 
         //4.update the wc - get in from root folder in
         updateWcFromCommit(m_Path, rootFolderSha1);
-
         FileUtils.changeFileContent(Magit.getMagitDir().resolve("branches").resolve("HEAD.txt"), branchNametoCheckOut);
     }
 
@@ -353,7 +352,6 @@ public class Repository {
         return members[2];
     }
 
-
     public void deleteCurrentWc() throws IOException {
         FileVisitor<Path> fv = new FileVisitor<Path>() {
             @Override
@@ -388,12 +386,10 @@ public class Repository {
             }
 
         };
-        Path thePath = Paths.get("C:\\Users\\ziv3r\\Desktop\\Check");
         Files.walkFileTree(m_Path, fv);
     }
 
     public FileWalkResult getStatus() throws IOException {
-
         FileWalkResult walkTreeResult = FileWalkTree();
         FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
         return walkTreeResult;
@@ -405,19 +401,17 @@ public class Repository {
         Path repoName = m_Path.resolve(".magit").resolve("repositoryName.txt");
         this.m_Name = FileUtils.readFileAndReturnString(repoName);
 
-        //1.delete all the data from system
-        m_Magit.initalize();
-        m_LastState.clearAll();
-
         //2.upload commits from new repository
         //3.upload all branches from new repository
         m_Magit.updateCommitsAndBranchesFromNewRepository(i_RepositoryPath);
 
         //4.upload all nodes of last commit(pull from head -> branch -> last commit sha1)
-        m_LastState.uploadAllNodesFromNewRepositoryLastState(i_RepositoryPath);
+        String lastCommitSha1 = m_Magit.getHead().getActiveBranch().getSha1LastCommit();
+        String rootFolderSha1 = m_Magit.getCommits().get(lastCommitSha1).getRootFolderSha1();
+        m_LastState.addRootFolerToNodes(rootFolderSha1 ,Paths.get(i_RepositoryPath));
+        m_LastState.uploadAllNodesFromNewRepositoryLastState(rootFolderSha1 ,Paths.get(i_RepositoryPath));
     }
 
-    //---------------------------------S Check Out--------------------------------
 
 }
 

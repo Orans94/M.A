@@ -89,6 +89,24 @@ public class FileUtils
         return new String(Files.readAllBytes(filePath));
     }
 
+    public static String getStringFromFolderZip(String i_zipFileName, String i_FileName) throws IOException {
+        String currentFileContent;
+
+        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName+ ".zip").toString());
+        ZipEntry zipEntry = zipFile.getEntry(i_FileName + ".txt");
+
+        InputStream inputStream =   zipFile.getInputStream(zipEntry);
+
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        currentFileContent = result.toString("UTF-8");
+        return currentFileContent;
+    }
+
     public static String getStringFromFolderZip(String i_zipFileName) throws IOException {
         String currentFileContent;
 

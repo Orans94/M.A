@@ -2,6 +2,8 @@ public class Head {
     private Branch m_ActiveBranch ;
 
 
+    public Head(){}
+
     public Head(Branch i_ActiveBranch){
         m_ActiveBranch = i_ActiveBranch;
     }

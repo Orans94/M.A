@@ -7,8 +7,7 @@ public class DateUtils
 {
     private static DateFormat m_Format = new SimpleDateFormat("dd.mm.yyyy-hh:mm:ss:sss");
 
-    public static String FormatToString(Date i_Date)
-    {
+    public static String dateToString(Date i_Date) {
         return m_Format.format(i_Date);
     }
 
@@ -24,4 +23,6 @@ public class DateUtils
         }
 
     }
+
+
 }

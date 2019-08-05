@@ -1,3 +1,5 @@
+import sun.invoke.empty.Empty;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -8,22 +10,21 @@ public class Magit {
     private Map<String, Branch> m_Branches;
     private static Path s_MagitPath;
     private static Path s_ObjectsPath;
-    private Head m_Head;
+    private Head m_Head = new Head();
 
 
-    public Magit(Path i_magitPath,boolean newRepo) throws IOException {
+    public Magit(Path i_magitPath, boolean newRepo) throws IOException {
         m_Commits = new HashMap<>();
         m_Branches = new HashMap<>();
         s_MagitPath = i_magitPath;       //to check static initalizer.
         s_ObjectsPath = s_MagitPath.resolve("objects");
 
-        if(newRepo == true){
+        if (newRepo == true) {
             Branch br = new Branch("master", null);
             m_Branches.put("master", br);
             createHeadAndMasterBranchFiles();
             m_Head = new Head(br);
         }
-
     }
 
     public Map<String, Commit> getCommits() {
@@ -61,12 +62,12 @@ public class Magit {
 
 
     //------------------------------------------adding new commit to the system----------------------------------
-    public void handleNewCommit(String i_rootFolderSha1, String i_message, CommitDelta i_CommitDeltaFromWalkTree) throws IOException {
+    public void handleNewCommit(String i_rootFolderSha1, String i_message) throws IOException {
         //1.create new sha1
         Commit commit = new Commit(i_rootFolderSha1,
                 m_Head.getActiveBranch().getSha1LastCommit() == "" ? null :
-                        m_Commits.get(m_Head.getActiveBranch().getSha1LastCommit()),
-                i_message, i_CommitDeltaFromWalkTree);
+                        (m_Head.getActiveBranch().getSha1LastCommit()),
+                i_message);
 
         //2.generate commit sha1 and add to commits
         String commitSha1 = commit.generateSha1();
@@ -113,7 +114,7 @@ public class Magit {
         List<BranchInformation> allBranchesInformation = new LinkedList<>();
         for (Map.Entry<String, Branch> entry : m_Branches.entrySet()) {
             BranchInformation branchInformaton = new BranchInformation();
-            branchInformaton.m_BracnhName = (entry.getKey());
+            branchInformaton.m_BracnhName = entry.getKey();
             if (branchInformaton.m_BracnhName.equals(m_Head.getActiveBranch().getBracnhName()))
                 branchInformaton.m_isACtiveBranch = true;
             branchInformaton.m_Sha1LastCommit = entry.getValue().getSha1LastCommit();
@@ -131,9 +132,9 @@ public class Magit {
 
     //Todo delete root folder sha1 from here.
     private void printActiveBranchHistory(Commit currentCommit) {
-        while (currentCommit != null) {
+        if (currentCommit != null) {
             System.out.println(currentCommit.toString());
-            printActiveBranchHistory(currentCommit.getParent());
+            printActiveBranchHistory(m_Commits.get(currentCommit.getParent()));
         }
     }
 
@@ -158,14 +159,16 @@ public class Magit {
         for (File file : branchesDir.listFiles()) {
             if (!file.getName().equals("HEAD.txt")) {
                 String branchName = file.getName();
+                branchName = branchName.substring(0, branchName.length() - 4);
                 String commitSha1OfCurrentBranch = FileUtils.readFileAndReturnString(file.toPath());
                 Branch newBranch = new Branch(branchName, commitSha1OfCurrentBranch);
                 m_Branches.put(branchName, newBranch);
             }
         }
-
         Path headPath = branchesPath.resolve("HEAD.txt");
-        m_Head.setActiveBranch(m_Branches.get(headPath));
+        String activeBranchName = FileUtils.readFileAndReturnString(headPath);
+        Branch BranchActiveBranch = m_Branches.get(activeBranchName);
+        m_Head.setActiveBranch(BranchActiveBranch);
     }
 
     private void addAllCommits(Path objectsPath) throws IOException {
@@ -178,22 +181,23 @@ public class Magit {
 
     private void addCurrentBranchCommits(String sha1LastCommit, Path objectsPath) throws IOException {
         //1.read the commit sha1 content from the zip file and generate commit
-        String commitContent = FileUtils.getStringFromFolderZip(objectsPath.resolve(sha1LastCommit + ".zip").toString());
-        String[] commitData = commitContent.split(",");
-        if (commitData[1].equals("null")) {
-            Commit newCommit = gennerateCommitFromFile(objectsPath.resolve(sha1LastCommit + ".zip"));
-            m_Commits.put(sha1LastCommit, newCommit);
-        } else {
-            addCurrentBranchCommits(commitData[1], objectsPath);
-            Commit newCommit = gennerateCommitFromFile(objectsPath.resolve(sha1LastCommit + ".zip"));
-            m_Commits.put(sha1LastCommit, newCommit);
+        if (!sha1LastCommit.equals("")) {
+            String commitContent = FileUtils.getStringFromFolderZip(sha1LastCommit);
+            String[] commitData = commitContent.split(",");
+            if (commitData[1].equals("null")) {
+                Commit newCommit = gennerateCommitFromFile((commitContent));
+                m_Commits.put(sha1LastCommit, newCommit);
+            } else {
+                addCurrentBranchCommits(commitData[1], objectsPath);
+                Commit newCommit = gennerateCommitFromFile(commitContent);
+                m_Commits.put(sha1LastCommit, newCommit);
+            }
         }
     }
 
-    private Commit gennerateCommitFromFile(Path commitAsZip) throws IOException {
-        String commitContent = FileUtils.getStringFromFolderZip(commitAsZip.toString());
+    private Commit gennerateCommitFromFile(String commitContent) throws IOException {
         String[] commitData = commitContent.split(",");
-        Commit commitParent = commitData[1].equals("null")? null : m_Commits.get(commitData[1]);
+        String commitParent = commitData[1].equals("null") ? null : commitData[1];
         return new Commit(commitData[0], commitParent, commitData[2], commitData[3], commitData[4]);
     }
 
