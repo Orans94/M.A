@@ -18,14 +18,13 @@ public class Repository {
     private Magit m_Magit;
     private static List<String> m_ChildrenInformation;
 
-    public Repository(String i_Name, Path i_RepoPath,boolean isNewRepo) throws IOException {
+    public Repository(String i_Name, Path i_RepoPath, boolean isNewRepo) throws IOException {
         m_Path = i_RepoPath;
         m_Name = i_Name;
         m_LastState = new LastState(m_Path);
-        m_Magit = new Magit(getMatgitPath(),isNewRepo);
+        m_Magit = new Magit(getMatgitPath(), isNewRepo);
         m_ChildrenInformation = new LinkedList<>();
     }
-
 
     //---------------------------------------S Properties-----------------------//
     public LastState getLastState() {
@@ -43,45 +42,89 @@ public class Repository {
     public Magit getMagit() {
         return m_Magit;
     }
-    //--------------------E properties-----------------------
-
 
     public Path getMatgitPath() {
         return m_Path.resolve(".magit");
     }
+    //--------------------E properties-----------------------
+
+
+    //--------------------------------S Change Repository--------------------------------//
+    public void uploadOrChangeRepositories(String i_RepositoryPath) throws IOException {
+        //0. update repository details, take the name of the repository from repository name file
+        Path repositoryNamePath = m_Path.resolve(".magit").resolve("repositoryName.txt");
+        this.m_Name = FileUtils.readFileAndReturnString(repositoryNamePath);
+
+        //2.upload commits and branches from existing repository
+        m_Magit.updateCommitsAndBranchesFromNewRepository(i_RepositoryPath);
+
+        //3.upload all nodes of last commit(pull from head -> branch -> last commit sha1)
+        updateLastCommitNodes();
+    }
+
+    private void updateLastCommitNodes() throws IOException {
+        String lastCommitSha1 = m_Magit.getHead().getActiveBranch().getSha1LastCommit();
+        String rootFolderSha1 = m_Magit.getCommits().get(lastCommitSha1).getRootFolderSha1();
+        m_LastState.addRootFolerToNodes(rootFolderSha1, m_Path);
+        m_LastState.uploadAllNodesFromNewRepositoryLastState(rootFolderSha1, m_Path);
+    }
+    //--------------------------------E Change Repository--------------------------------//
+
+
+    public void showAllFilesFromActiveBranch() {
+        m_LastState.showAllFilesFromActiveBranch();
+    }
+
+    public FileWalkResult getStatus() throws IOException {
+        FileWalkResult walkTreeResult = findDeltaBetweenWcAndLastCommit();
+        FindAllDeletedFiles(walkTreeResult, m_LastState.getLastCommitInformation());
+        m_ChildrenInformation.clear();
+        return walkTreeResult;
+    }
+
 
     //-----------------------------------S make commit--------------------------------//
 
     public void createCommit(String i_message) throws IOException {
         //this two lines find
-        FileWalkResult walkTreeResult = FileWalkTree();
-        FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
+        FileWalkResult walkTreeResult = findDeltaBetweenWcAndLastCommit();
+        FindAllDeletedFiles(walkTreeResult, m_LastState.getLastCommitInformation());
+
         //there were no changes
-        if (walkTreeResult.getUnchangedFiles().getSha1FileToNode().size() ==
-                m_LastState.m_lastCommitInformation.getSha1FileToNode().size()
-                && walkTreeResult.getFilesToZip().getSha1FileToNode().size() == 0)
+        if (!isOpenChanges(walkTreeResult)) {
             return;
-            //there is at least one file that changed
-        else {
-            LastCommitInformation mapsToZip = walkTreeResult.getFilesToZip();
-            LastCommitInformation unchangedFiles = walkTreeResult.getUnchangedFiles();
-            ZipAllNewFiles(mapsToZip);
-            LastCommitInformation combinedMaps = mergeMaps(mapsToZip, unchangedFiles);
-            m_LastState.m_lastCommitInformation = combinedMaps;
+        } else {         //there is at least one file that changed
+            setLastCommitInformation(walkTreeResult);
             String rootFolderItemString = m_ChildrenInformation.get(0);
-            String rootFolderSha1 = getSha1FromItemString(rootFolderItemString);
+            String rootFolderSha1 = getSha1FromLine(rootFolderItemString);
             updateCommitsAndBranches(rootFolderSha1, i_message, walkTreeResult.getCommitDelta());
         }
         m_ChildrenInformation.clear();
     }
 
-    private FileWalkResult FileWalkTree() throws IOException {
+    private boolean isOpenChanges(FileWalkResult walkTreeResult) {
+        return !(walkTreeResult.getUnchangedFiles().getSha1FileToNode().size()
+                == m_LastState.getLastCommitInformation().getSha1FileToNode().size()
+                && walkTreeResult.getFilesToZip().getSha1FileToNode().size() == 0);
+    }
+
+    private void setLastCommitInformation(FileWalkResult walkTreeResult) throws IOException {
+        LastCommitInformation mapsToZip = walkTreeResult.getFilesToZip();
+        LastCommitInformation unchangedFiles = walkTreeResult.getUnchangedFiles();
+        ZipAllNewFiles(mapsToZip);
+        LastCommitInformation combinedMaps = mergeMaps(mapsToZip, unchangedFiles);
+        m_LastState.setLastCommitInformation(combinedMaps);
+
+    }
+
+    //this method create FileWalkResult which contain all the delta between wc and last commit
+    private FileWalkResult findDeltaBetweenWcAndLastCommit() throws IOException {
 
         FileWalkResult fileWalkResult = new FileWalkResult();
 
         FileVisitor<Path> fileVisitor = new FileVisitor<Path>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attסrs) throws IOException {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 if (dir.getFileName().toString().equals(".magit")) {
                     return FileVisitResult.SKIP_SUBTREE;
                 } else {
@@ -99,7 +142,7 @@ public class Repository {
                 //1.check if the file path exist
                 //  1.if it is : check the sha1 - equal= not chagne. not equal-modifies.
                 //  2.if it isn't : means that it is a new file .
-                if (!m_LastState.m_lastCommitInformation.getFilePathToSha1().containsKey(file)) {
+                if (!m_LastState.getLastCommitInformation().getFilePathToSha1().containsKey(file)) {
                     PathDoesnotExist(fileWalkResult, file, blobSha1, blob);
                 } else {
                     pathExistCheckIfModify(fileWalkResult, file, blobSha1, blob);
@@ -137,7 +180,7 @@ public class Repository {
 
                 //5. update children information
                 updateChildrenInformation(dir, numOfChildren, folder, folderSHA1);
-                if (!m_LastState.m_lastCommitInformation.getFilePathToSha1().containsKey(dir)) {
+                if (!m_LastState.getLastCommitInformation().getFilePathToSha1().containsKey(dir)) {
                     PathDoesnotExist(fileWalkResult, dir, folderSHA1, folder);
                 } else {
                     pathExistCheckIfModify(fileWalkResult, dir, folderSHA1, folder);
@@ -174,13 +217,6 @@ public class Repository {
         return folderContent;
     }
 
-    //Todo - check what is the  purpose of this function
-    private String addFolderToMap(Path i_FolderPath, Folder i_Folder, String i_FolderContentToSHA1) {
-        String folderSHA1 = DigestUtils.sha1Hex(i_FolderContentToSHA1);
-        //m_LastState.addNodeItem(i_FolderPath, folderSHA1, i_Folder);
-        return folderSHA1;
-    }
-
     private void updateChildrenInformation(Path i_Dir, int i_NumOfChildren, Folder i_Folder, String i_FolderSHA1) {
         m_ChildrenInformation = m_ChildrenInformation.stream()
                 .limit(m_ChildrenInformation.size() - i_NumOfChildren)
@@ -191,11 +227,6 @@ public class Repository {
         m_ChildrenInformation.add(itemString);
     }
 
-    private String getSha1FromItemString(String i_ItemString) {
-        String[] members = i_ItemString.split(",");
-        return members[1];
-    }
-
     private void PathDoesnotExist(FileWalkResult i_fileWalkResult, Path i_FilePath, String i_NodeSha1, Node i_NewNode) {
         i_fileWalkResult.getFilesToZip().getFilePathToSha1().put(i_FilePath, i_NodeSha1);
         i_fileWalkResult.getFilesToZip().getSha1FileToNode().put(i_NodeSha1, i_NewNode);
@@ -203,7 +234,7 @@ public class Repository {
     }
 
     private void pathExistCheckIfModify(FileWalkResult i_fileWalkResult, Path i_FilePath, String i_NodeSha1, Node i_NewNode) {
-        if (m_LastState.m_lastCommitInformation.getFilePathToSha1().get(i_FilePath).equals(i_NodeSha1)) {
+        if (m_LastState.getLastCommitInformation().getFilePathToSha1().get(i_FilePath).equals(i_NodeSha1)) {
             i_fileWalkResult.getUnchangedFiles().getFilePathToSha1().put(i_FilePath, i_NodeSha1);
             i_fileWalkResult.getUnchangedFiles().getSha1FileToNode().put(i_NodeSha1, i_NewNode);
         } else {
@@ -218,7 +249,6 @@ public class Repository {
         m_Magit.handleNewCommit(i_RootFolderSha1, i_message);
     }
 
-    //Think if to move this to file.utils??
     private void ZipAllNewFiles(LastCommitInformation mapToZip) throws IOException {
         //walk throw all the hash map of the paths send the path and pass the
         //node from the other map also
@@ -261,10 +291,10 @@ public class Repository {
 
         walkTreeResult.getCommitDelta().setDeletedFiles(allPathsFromLastCommit);
     }
-
     //-----------------------------------E make commit--------------------------------//
 
-    //-----------------------------------S make New Branch --------------------------------//
+
+    //-----------------------------------S Branch methods --------------------------------//
     public void createNewBranch(String i_branchName) throws IOException {
         m_Magit.createNewBranch(i_branchName);
     }
@@ -277,9 +307,7 @@ public class Repository {
         m_Magit.deleteExistingBranch(i_BranchToDeleteName);
     }
 
-    //---------------------------------S Check Out--------------------------------
-
-    public boolean isWcClean() throws IOException{
+    public boolean isWcClean() throws IOException {
         FileWalkResult wc = getStatus();
         CommitDelta delta = wc.getCommitDelta();
         return delta.getModifiedFiles().size() + delta.getNewFiles().size() +
@@ -293,7 +321,6 @@ public class Repository {
         //2.find the branch in system and take the commit that it points to.
         Branch branchToCheckOut = m_Magit.getBranches().get(branchNametoCheckOut);
         String commitSha1 = branchToCheckOut.getSha1LastCommit();
-
         String rootFolderSha1 = m_Magit.getCommits().get(commitSha1).getRootFolderSha1();
 
         //3.update all the data structurs that holds last commit data
@@ -307,49 +334,36 @@ public class Repository {
     private void updateSystemData(String branchNametoCheckOut, String i_RootSha1) throws IOException {
         m_LastState.clearAll();
         Branch activeBranch = m_Magit.getBranches().get(branchNametoCheckOut);
-        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(FileUtils.getStringFromFolderZip(i_RootSha1)));
+        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(FileUtils.getStringFromFolderZip(i_RootSha1, "")));
         m_Magit.getHead().setActiveBranch(activeBranch);
     }
 
-    private void updateWcFromCommit(Path path, String currentSha1) throws IOException {
-        String zipContext = FileUtils.getStringFromFolderZip(currentSha1);
+    //lay out last commit in working copy
+    private void updateWcFromCommit(Path path, String i_RootFolderSha1) throws IOException {
+        String zipContext = FileUtils.getStringFromFolderZip(i_RootFolderSha1, "");
         String[] lines = zipContext.split(System.lineSeparator());
         for (String line : lines) {
             String fileType = getTypeFromLine(line);
-            if(fileType.equals("Blob")){
-                //do unzip of the blob to workingCopy
-                //void unzip(final String zipFilePath, final String unzipLocation) throws IOException, IOException {
-                String blobSha1 = getSha1FromItemString(line);
-                FileUtils.unzip(Magit.getObjectsPath().resolve(blobSha1+".zip").toString(),path.toString());
-                String blobContent = new String(Files.readAllBytes(path.resolve(getNameFromLine(line))));
-                m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), blobSha1, new Blob(blobContent));
-
-            }
-            else{
+            if (fileType.equals("Blob")) {
+                //do unzip of the blob to workingCopy and add to nodes in lastCommit
+                generateFileToWorkingCopyAndToSystem(path, line);
+            } else {
                 //create the directory in the current path and deep into the directory
                 String dirName = getNameFromLine(line);
                 Files.createDirectory(path.resolve(dirName));
-                updateWcFromCommit(path.resolve(dirName),getSha1FromLine(line));
-                String folderSha1 = getSha1FromItemString(line);
-                String fodlerContent = FileUtils.getStringFromFolderZip(folderSha1);
+                updateWcFromCommit(path.resolve(dirName), getSha1FromLine(line));
+                String folderSha1 = getSha1FromLine(line);
+                String fodlerContent = FileUtils.getStringFromFolderZip(folderSha1, "");
                 m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), folderSha1, new Folder(fodlerContent));
             }
         }
     }
 
-    private String getNameFromLine(String i_OneLine) {
-        String[]members = i_OneLine.split(",");
-        return members[0];
-    }
-
-    private String getSha1FromLine(String i_OneLine) {
-        String[]members = i_OneLine.split(",");
-        return members[1];
-    }
-
-    private String getTypeFromLine(String i_oneLine) {
-        String[]members = i_oneLine.split(",");
-        return members[2];
+    private void generateFileToWorkingCopyAndToSystem(Path path, String line) throws IOException {
+        String blobSha1 = getSha1FromLine(line);
+        FileUtils.unzip(Magit.getObjectsPath().resolve(blobSha1 + ".zip").toString(), path.toString());
+        String blobContent = new String(Files.readAllBytes(path.resolve(getNameFromLine(line))));
+        m_LastState.addNodeItem(path.resolve(getNameFromLine(line)), blobSha1, new Blob(blobContent));
     }
 
     public void deleteCurrentWc() throws IOException {
@@ -389,29 +403,24 @@ public class Repository {
         Files.walkFileTree(m_Path, fv);
     }
 
-    public FileWalkResult getStatus() throws IOException {
-        FileWalkResult walkTreeResult = FileWalkTree();
-        FindAllDeletedFiles(walkTreeResult, m_LastState.m_lastCommitInformation);
-        return walkTreeResult;
+    //-----------------------------------E Branch methods --------------------------------//
+
+    //find good place for it duplicate code here and in repository
+    private String getNameFromLine(String i_OneLine) {
+        String[] members = i_OneLine.split(",");
+        return members[0];
     }
 
-    public void uploadOrswitchRepositories(String i_RepositoryPath) throws IOException {
-        //0. update repository details
-        //take the name of the repository from repository naem
-        Path repoName = m_Path.resolve(".magit").resolve("repositoryName.txt");
-        this.m_Name = FileUtils.readFileAndReturnString(repoName);
-
-        //2.upload commits from new repository
-        //3.upload all branches from new repository
-        m_Magit.updateCommitsAndBranchesFromNewRepository(i_RepositoryPath);
-
-        //4.upload all nodes of last commit(pull from head -> branch -> last commit sha1)
-        String lastCommitSha1 = m_Magit.getHead().getActiveBranch().getSha1LastCommit();
-        String rootFolderSha1 = m_Magit.getCommits().get(lastCommitSha1).getRootFolderSha1();
-        m_LastState.addRootFolerToNodes(rootFolderSha1 ,Paths.get(i_RepositoryPath));
-        m_LastState.uploadAllNodesFromNewRepositoryLastState(rootFolderSha1 ,Paths.get(i_RepositoryPath));
+    private String getSha1FromLine(String i_OneLine) {
+        String[] members = i_OneLine.split(",");
+        return members[1];
     }
 
+    private String getTypeFromLine(String i_oneLine) {
+        String[] members = i_oneLine.split(",");
+        return members[2];
+    }
+    //find good place for it duplicate code here and in repository
 
 }
 

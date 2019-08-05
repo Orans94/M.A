@@ -4,17 +4,54 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class LastState {
+
+    private Path m_RootPath;
+
+
+    private LastCommitInformation m_lastCommitInformation = new LastCommitInformation();
+
+    //---------------------------------------properties---------------------------------------//
     public LastCommitInformation getLastCommitInformation() {
         return m_lastCommitInformation;
     }
 
-    LastCommitInformation m_lastCommitInformation = new LastCommitInformation();
-
-    private Path m_RootPath;
+    public void setLastCommitInformation(LastCommitInformation m_lastCommitInformation) {
+        this.m_lastCommitInformation = m_lastCommitInformation;
+    }
 
     //private Commit m_CurrentCommitLoaded;
     public LastState(Path i_RootPath) {
         m_RootPath = i_RootPath;
+    }
+    //---------------------------------------properties---------------------------------------//
+
+
+    public void addRootFolerToNodes(String rootFolderSha1, Path i_repositoryPath) throws IOException {
+        String rootFolderContent = FileUtils.getStringFromFolderZip(rootFolderSha1,"");
+        addNodeItem(i_repositoryPath, rootFolderSha1, new Folder(rootFolderContent ));
+    }
+
+    //important method that put in system all the nodes of the last commit
+    public void uploadAllNodesFromNewRepositoryLastState(String rootFolderSha1 , Path i_repositoryPath) throws IOException {
+        String zipContext = FileUtils.getStringFromFolderZip(rootFolderSha1,"");
+        String[] lines = zipContext.split(System.lineSeparator());
+        for (String line : lines) {
+            String fileType = getTypeFromLine(line);
+            if(fileType.equals("Blob")){
+                String blobSha1 = getSha1FromLine(line);
+                String blobName = getNameFromLine(line);
+                blobName = blobName.substring(0,blobName.length()-4);
+                String blobContent = FileUtils.getStringFromFolderZip(blobSha1,blobName);
+                addNodeItem(i_repositoryPath.resolve(getNameFromLine(line)), blobSha1, new Blob(blobContent));
+            }
+            else{
+                //create the directory in the current path and deep into the directory
+                String folderSha1 = getSha1FromLine(line);
+                String fodlerContent = FileUtils.getStringFromFolderZip(folderSha1,"");
+                addNodeItem(i_repositoryPath.resolve(getNameFromLine(line)), folderSha1, new Folder(fodlerContent));
+                uploadAllNodesFromNewRepositoryLastState(folderSha1,i_repositoryPath.resolve(getNameFromLine(line)));
+            }
+        }
     }
 
     public void addNodeItem(Path i_FilePath ,String i_NodeSha1, Node i_NewNodeToadd) {
@@ -26,7 +63,7 @@ public class LastState {
         m_lastCommitInformation.clear();
     }
 
-//Todo - understatnd what exactly meant here .
+//Todo how to print rootfolder Data?
     public void showAllFilesFromActiveBranch() {
         for (Map.Entry<String, Node> entry : m_lastCommitInformation.getSha1FileToNode().entrySet()) {
             Node currentNode = entry.getValue();
@@ -36,29 +73,7 @@ public class LastState {
         }
     }
 
-    public void uploadAllNodesFromNewRepositoryLastState(String fileSha1 , Path i_repositoryPath) throws IOException {
-        String zipContext = FileUtils.getStringFromFolderZip(fileSha1);
-        String[] lines = zipContext.split(System.lineSeparator());
-        for (String line : lines) {
-            String fileType = getTypeFromLine(line);
-            if(fileType.equals("Blob")){
-                String blobSha1 = getSha1FromLine(line);
-                String blobName = getNameFromLine(line);
-                blobName = blobName.substring(0,blobName.length()-4);
-                String blobContent = FileUtils.getStringFromFolderZip(blobSha1,blobName);
-                addNodeItem(i_repositoryPath.resolve(getNameFromLine(line)), blobSha1, new Blob(blobContent));
-
-            }
-            else{
-                //create the directory in the current path and deep into the directory
-                String folderSha1 = getSha1FromLine(line);
-                String fodlerContent = FileUtils.getStringFromFolderZip(folderSha1);
-                addNodeItem(i_repositoryPath.resolve(getNameFromLine(line)), folderSha1, new Folder(fodlerContent));
-                uploadAllNodesFromNewRepositoryLastState(folderSha1,i_repositoryPath.resolve(getNameFromLine(line)));
-            }
-        }
-    }
-
+    //find better place for it ....
     private String getNameFromLine(String i_OneLine) {
         String[]members = i_OneLine.split(",");
         return members[0];
@@ -73,10 +88,9 @@ public class LastState {
         String[]members = i_oneLine.split(",");
         return members[2];
     }
+    //find better place for it ....
 
-    public void addRootFolerToNodes(String rootFolderSha1, Path i_repositoryPath) throws IOException {
-        String rootFolderContent = FileUtils.getStringFromFolderZip(rootFolderSha1);
-        addNodeItem(i_repositoryPath, rootFolderSha1, new Folder(rootFolderContent ));
 
-    }
+
+
 }

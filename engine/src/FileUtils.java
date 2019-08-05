@@ -7,14 +7,25 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class FileUtils
-{
-    public static final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
+public class FileUtils {
+    public static final char[] ILLEGAL_CHARACTERS = {'/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'};
+
+    //Todo check if is needed
+    public static boolean isDirectoryNameValid(String repositoryName) {
+        for (char toCheck : ILLEGAL_CHARACTERS) {
+            if (repositoryName.contains(String.valueOf(toCheck)))
+                return false;
+        }
+        return repositoryName != "";
+    }
 
     public static void CreateAndWriteTxtFile(Path i_Path, String i_Content) throws IOException {
         Files.createFile(i_Path);
-        Files.write(i_Path, i_Content.getBytes());
+        if (i_Content != null) {
+            Files.write(i_Path, i_Content.getBytes());
+        }
     }
+
     public static void changeFileContent(Path i_Path, String i_NewContent) throws IOException {
         FileOutputStream writer = new FileOutputStream(String.valueOf(i_Path));
         writer.write(("").getBytes());
@@ -23,18 +34,16 @@ public class FileUtils
     }
 
     //create temp file in objects make a zip from this file and delete it.
-    public static void createFileZipAndDelete(Path i_PathToPutTheTempText,String i_NameOfTheZipAsSha1,String i_ContentTowWriteInFile ) throws IOException {
-        Path createTempTxtPath = i_PathToPutTheTempText.resolve(i_NameOfTheZipAsSha1+".txt");
+    public static void createFileZipAndDelete(Path i_PathToPutTheTempText, String i_NameOfTheZipAsSha1, String i_ContentTowWriteInFile) throws IOException {
+        Path createTempTxtPath = i_PathToPutTheTempText.resolve(i_NameOfTheZipAsSha1 + ".txt");
         CreateAndWriteTxtFile(createTempTxtPath, i_ContentTowWriteInFile);
-        Zip(i_NameOfTheZipAsSha1,createTempTxtPath);
+        Zip(i_NameOfTheZipAsSha1, createTempTxtPath);
         deleteFile(createTempTxtPath);
     }
 
-    public static void Zip(String i_ZipName, Path i_FilePath)
-    { //TODO handle exepction
+    public static void Zip(String i_ZipName, Path i_FilePath) { //TODO handle exepction
         Path zippingPath = Magit.getMagitDir().resolve("objects").resolve(i_ZipName + ".zip");
-        try
-        {
+        try {
             String sourceFile = i_FilePath.toString();
             FileOutputStream fos = new FileOutputStream(zippingPath.toString());
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -44,21 +53,19 @@ public class FileUtils
             zipOut.putNextEntry(zipEntry);
             byte[] bytes = new byte[1024];
             int length;
-            while ((length = fis.read(bytes)) >= 0)
-            {
+            while ((length = fis.read(bytes)) >= 0) {
                 zipOut.write(bytes, 0, length);
             }
             zipOut.close();
             fis.close();
             fos.close();
-        } catch (IOException e)
-        {}
+        } catch (IOException e) {
+        }
     }
 
     //zipFilePath = the path of the file end with .zip
     //unzip location is the name of the directory to put the unzipped file
     public static void unzip(final String zipFilePath, final String unzipLocation) throws IOException, IOException {
-
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
@@ -89,13 +96,18 @@ public class FileUtils
         return new String(Files.readAllBytes(filePath));
     }
 
+    //the entry isn't the same as the zip file name
     public static String getStringFromFolderZip(String i_zipFileName, String i_FileName) throws IOException {
         String currentFileContent;
 
-        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName+ ".zip").toString());
-        ZipEntry zipEntry = zipFile.getEntry(i_FileName + ".txt");
-
-        InputStream inputStream =   zipFile.getInputStream(zipEntry);
+        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName + ".zip").toString());
+        ZipEntry zipEntry;
+        if(i_FileName.isEmpty()){
+            zipEntry = zipFile.getEntry(i_zipFileName + ".txt");
+        }else {
+            zipEntry = zipFile.getEntry(i_FileName + ".txt");
+        }
+        InputStream inputStream = zipFile.getInputStream(zipEntry);
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -107,13 +119,14 @@ public class FileUtils
         return currentFileContent;
     }
 
-    public static String getStringFromFolderZip(String i_zipFileName) throws IOException {
+    /*
+    public static String getStringFromFolderZipWithSameName(String i_zipFileName, ) throws IOException {
         String currentFileContent;
 
-        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName+ ".zip").toString());
+        ZipFile zipFile = new ZipFile(Magit.getObjectsPath().resolve(i_zipFileName + ".zip").toString());
         ZipEntry zipEntry = zipFile.getEntry(i_zipFileName + ".txt");
 
-        InputStream inputStream =   zipFile.getInputStream(zipEntry);
+        InputStream inputStream = zipFile.getInputStream(zipEntry);
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -124,6 +137,7 @@ public class FileUtils
         currentFileContent = result.toString("UTF-8");
         return currentFileContent;
     }
+     */
 }
 
 

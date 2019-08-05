@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Menu {
-    private final int k_MinValue = 0;
+    private final int k_MinValue = 1;
     private final int k_MaxValue = 13;
     private final String k_Menu =
             "Please choose a number from the list below:" + System.lineSeparator() +
