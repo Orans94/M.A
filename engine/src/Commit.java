@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;
 
-public class Commit<pubic> {
+public class Commit {
     private String m_RootFolderSha1;
-    private String m_Parent;
+    private String m_Parent = "";
     private String m_Message;
     private String m_CommitAuthor;
     private String m_CommitDate;
@@ -32,8 +32,25 @@ public class Commit<pubic> {
         //m_CommitDelta = i_CommitDelta;
     }
 
+
+    public String getCommitAuthor() {
+        return m_CommitAuthor;
+    }
+
+    public String getCommitDate() {
+        return m_CommitDate;
+    }
+
     public String getRootFolderSha1() {
         return m_RootFolderSha1;
+    }
+
+    public String getMessage() {
+        return m_Message;
+    }
+
+    public String getParent() {
+        return m_Parent;
     }
 
     @Override
@@ -62,11 +79,6 @@ public class Commit<pubic> {
             return new Commit(commitData[0], commitParent, commitData[2], commitData[3], commitData[4]);
     }
 
-    public String getMessage() {
-        return m_Message;
-    }
 
-    public String getParent() {
-        return m_Parent;
-    }
+
 }

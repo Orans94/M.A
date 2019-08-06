@@ -21,7 +21,6 @@ public class UI {
             handleUserChoice(choice);
         }
     }
-
     private void handleUserChoice(int i_UserChoice) throws IOException, ActiveBranchDeleteExeption {
         switch (i_UserChoice) {
             case 1:
@@ -47,7 +46,8 @@ public class UI {
 
             case 5:
                 //Todo - add information about root folder ?!
-                m_Engine.showAllFilesPointsFromLastCommit();
+                List<Node> nodesFromLastCommit = m_Engine.getAllFilesPointsFromLastCommit();
+                printCollection(nodesFromLastCommit);
                 break;
 
             case 6:
@@ -62,7 +62,7 @@ public class UI {
 
             case 8:
                 List<BranchInformation> allBranches = m_Engine.getAllBranches();
-                printAllBranchesData(allBranches);
+                printCollection(allBranches);
                 break;
 
             case 9:
@@ -80,27 +80,31 @@ public class UI {
                 break;
 
             case 11:
-                String branchNametoCheckOut = getExistBranchName();
-                if (!m_Engine.getRepository().isWcClean()) {
-                    System.out.println("There are unsaved changes, would you like to commit first?");
-                    Scanner scanner = new Scanner(System.in);
-                    if (scanner.nextLine().toLowerCase().equals("yes")) {
-                        m_Engine.createNewCommit(getCommitMessageFromUser());
-                    }
+                if (checkIfThereAreOpeningChangesAndGetUserDecision()) {
+                    break;
+                } else {
+                    String branchNametoCheckOut = getExistBranchName();
+                    m_Engine.checkOutBranch(branchNametoCheckOut);
+                    printCollection(m_Engine.getRepository().getLastState().getLastCommitInformation().getFilePathToSha1().values());
+                    break;
                 }
-                m_Engine.checkOutBranch(branchNametoCheckOut);
-                printCollection(m_Engine.getRepository().getLastState().getLastCommitInformation().getFilePathToSha1().values());
-                break;
-
             case 12:
-                m_Engine.showActiveBranchHistory();
+                List<CommitInformation> activeBranchHistory = m_Engine.getActiveBranchHistory();
+                printCollection(activeBranchHistory);
                 break;
             case 13:
+                if (checkIfThereAreOpeningChangesAndGetUserDecision()) {
+                    break;
+                } else {
+                    initalizeHeadToCommit();
+                }
+
+                break;
+            case 14:
                 exitSystem();
                 break;
         }
     }
-
 
     //-----------------------------------methods----------------------------//
     private String getUserName() {
@@ -178,10 +182,29 @@ public class UI {
         }
     }
 
-    private void printAllBranchesData(List<BranchInformation> allBranches) {
-        for (BranchInformation brancInformation : allBranches) {
-            System.out.println(brancInformation.toString());
+
+    private boolean checkIfThereAreOpeningChangesAndGetUserDecision() throws IOException {
+        if (!m_Engine.getRepository().isWcClean()) {
+            System.out.println("There are unsaved changes, would you like to commit first?(yes/no)");
+            Scanner scanner = new Scanner(System.in);
+            if (scanner.nextLine().toLowerCase().equals("yes")) {
+                m_Engine.createNewCommit(getCommitMessageFromUser());
+                return true;
+            }
         }
+        return false;
+    }
+    private void initalizeHeadToCommit() throws IOException {
+        String commitSha1 = getCommitSha1FromUser();
+        m_Engine.initializeHeadToCommit(commitSha1);
+    }
+
+    private String getCommitSha1FromUser() {
+        String commitSha1;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("please enter commmit sha1");
+        commitSha1 = scanner.nextLine();
+        return commitSha1;
     }
 
     private void printCollection(Iterable i_Collection) {
@@ -239,10 +262,6 @@ public class UI {
 //2. commits that down need and how to go there ?
 //3. XML explanations !?
 //4.remmber this commit delta - think about it with noam ...
-//5.what do you think about static methods in classes that generate object(commit generator).
-
-
-
 
 
 //    private String getBranchNameForCheckOut(){

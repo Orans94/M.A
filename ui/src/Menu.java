@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Menu {
     private final int k_MinValue = 1;
-    private final int k_MaxValue = 13;
+    private final int k_MaxValue = 14;
     private final String k_Menu =
             "Please choose a number from the list below:" + System.lineSeparator() +
                     "1. Update user name" + System.lineSeparator() +
@@ -17,7 +17,8 @@ public class Menu {
                     "10. Delete branch" + System.lineSeparator() +
                     "11. Checkout" + System.lineSeparator() +
                     "12. Show commit history of current branch" + System.lineSeparator() +
-                    "13. Exit" + System.lineSeparator();
+                    "13. Initalize head branch point to other commit" + System.lineSeparator()+
+                    "14. Exit" + System.lineSeparator();
 
     public void printMenu() {
         System.out.println(k_Menu);

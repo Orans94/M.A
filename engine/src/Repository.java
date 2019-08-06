@@ -70,9 +70,8 @@ public class Repository {
     }
     //--------------------------------E Change Repository--------------------------------//
 
-
-    public void showAllFilesFromActiveBranch() {
-        m_LastState.showAllFilesFromActiveBranch();
+    public List<Node> getAllFilesFromActiveBranch() {
+        return m_LastState.getAllFilesFromActiveBranch();
     }
 
     public FileWalkResult getStatus() throws IOException {
@@ -81,7 +80,6 @@ public class Repository {
         m_ChildrenInformation.clear();
         return walkTreeResult;
     }
-
 
     //-----------------------------------S make commit--------------------------------//
 
@@ -328,14 +326,13 @@ public class Repository {
 
         //4.update the wc - get in from root folder in
         updateWcFromCommit(m_Path, rootFolderSha1);
-        FileUtils.changeFileContent(Magit.getMagitDir().resolve("branches").resolve("HEAD.txt"), branchNametoCheckOut);
     }
 
     private void updateSystemData(String branchNametoCheckOut, String i_RootSha1) throws IOException {
-        m_LastState.clearAll();
         Branch activeBranch = m_Magit.getBranches().get(branchNametoCheckOut);
-        m_LastState.addNodeItem(m_Path, i_RootSha1, new Folder(FileUtils.getStringFromFolderZip(i_RootSha1, "")));
         m_Magit.getHead().setActiveBranch(activeBranch);
+        FileUtils.changeFileContent(Magit.getMagitDir().resolve("branches").resolve("HEAD.txt"), branchNametoCheckOut);
+        m_LastState.addRootFolerToNodes(i_RootSha1,m_Path);
     }
 
     //lay out last commit in working copy
@@ -405,6 +402,18 @@ public class Repository {
 
     //-----------------------------------E Branch methods --------------------------------//
 
+    public void initalizeHeadToCommit(String i_CommitSha1) throws IOException {
+        //1.find the head branch in branches and change his pointing
+        Branch activeBranch = m_Magit.getBranches().get(m_Magit.getHead().getActiveBranch().getBracnhName());
+        activeBranch.setSha1LastCommit(i_CommitSha1);
+
+        //3.update the branch in files to point new commit sha1
+        FileUtils.changeFileContent(m_Path.resolve(".magit").resolve("branches").resolve(activeBranch.getBracnhName()+".txt"),i_CommitSha1);
+
+        //4.change lastStateNodes to new commit nodes
+        updateLastCommitNodes();
+    }
+
     //find good place for it duplicate code here and in repository
     private String getNameFromLine(String i_OneLine) {
         String[] members = i_OneLine.split(",");
@@ -420,7 +429,6 @@ public class Repository {
         String[] members = i_oneLine.split(",");
         return members[2];
     }
-    //find good place for it duplicate code here and in repository
 
 }
 

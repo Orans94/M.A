@@ -186,21 +186,24 @@ public class Magit {
         return allBranchesInformation;
     }
 
-    public void showActiveBranchHistory() {
+    public List<CommitInformation> showActiveBranchHistory() {
+        List<CommitInformation> activeBrancHistory = new LinkedList<>();
         String lastCommitSha1 = m_Head.getActiveBranch().getSha1LastCommit();
-        Commit currentCommit = m_Commits.get(lastCommitSha1);
-        printActiveBranchHistory(currentCommit);
+        createActiveBranchHistory(lastCommitSha1,activeBrancHistory);
+        return activeBrancHistory;
     }
 
     //Todo delete root folder sha1 from here.
     //helper function of showActiveBranchHistory
-    private void printActiveBranchHistory(Commit currentCommit) {
-        if (currentCommit != null) {
-            System.out.println(currentCommit.toString());
-            printActiveBranchHistory(m_Commits.get(currentCommit.getParent()));
+    private void createActiveBranchHistory(String commitSha1,List<CommitInformation> i_ActiveBranchHistory) {
+        if (commitSha1 != null) {
+            Commit currentcommit = m_Commits.get(commitSha1);
+            CommitInformation commitInfo = new CommitInformation(
+                    commitSha1,currentcommit.getMessage(),currentcommit.getCommitDate(),currentcommit.getCommitAuthor());
+            i_ActiveBranchHistory.add(commitInfo);
+            createActiveBranchHistory((currentcommit.getParent()),i_ActiveBranchHistory);
         }
     }
-
-
-
 }
+
+//    (String i_CommitSha1, String i_CommitMessage, String i_CreateingDate, String i_UserNameCreateor) {

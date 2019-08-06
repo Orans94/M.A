@@ -64,8 +64,8 @@ public class Engine {
 
 
     //------------------S Branches commands-----------------------------------
-    public void showAllFilesPointsFromLastCommit() {
-        m_Repository.showAllFilesFromActiveBranch();
+    public List<Node> getAllFilesPointsFromLastCommit() {
+        return m_Repository.getAllFilesFromActiveBranch();
     }
 
     public FileWalkResult getStatus() throws IOException {
@@ -93,8 +93,12 @@ public class Engine {
         m_Repository.checkOut(branchNametoCheckOut);
     }
 
-    public void showActiveBranchHistory() {
-        m_Repository.getMagit().showActiveBranchHistory();
+    public List<CommitInformation> getActiveBranchHistory() {
+        return m_Repository.getMagit().showActiveBranchHistory();
+    }
+
+    public void initializeHeadToCommit(String i_CommitSha1) throws IOException {
+        m_Repository.initalizeHeadToCommit(i_CommitSha1);
     }
 
     //------------------E Branches commands-----------------------------------
