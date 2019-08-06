@@ -2,23 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c7a20306-527a-4543-9f4c-67544e2bd86a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/engine/src/CommitInformation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/engine/src/parser/MAGit (1).xsd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/src/Commit.java" beforeDir="false" afterPath="$PROJECT_DIR$/engine/src/Commit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/src/Engine.java" beforeDir="false" afterPath="$PROJECT_DIR$/engine/src/Engine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/src/LastState.java" beforeDir="false" afterPath="$PROJECT_DIR$/engine/src/LastState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/src/Magit.java" beforeDir="false" afterPath="$PROJECT_DIR$/engine/src/Magit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/src/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/engine/src/Repository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Commit.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Engine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Engine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/LastState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/LastState.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Magit.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Magit.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Repository$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Repository$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Repository$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Repository$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/engine/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/engine/Repository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/ui/Menu.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ui/Menu.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/ui/UI.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/src/Menu.java" beforeDir="false" afterPath="$PROJECT_DIR$/ui/src/Menu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/src/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/ui/src/UI.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -36,58 +21,38 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ui/src/UI.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitBlob.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="52" column="19" lean-forward="true" selection-start-line="52" selection-start-column="19" selection-end-line="52" selection-end-column="19" />
-              <folding>
-                <element signature="method#UI#0;class#UI#0" />
-                <element signature="e#276#309#0" />
-                <element signature="method#start#0;class#UI#0" />
-                <element signature="e#475#573#1" />
-                <element signature="e#950#1020#0" />
-                <element signature="e#2515#2675#0" />
-                <element signature="e#2714#2790#0" />
-                <element signature="e#2986#3032#1" />
-                <element signature="e#3053#3372#1" />
-                <element signature="e#3658#3684#1" />
-                <element signature="e#3699#3747#1" />
-                <element signature="method#getUserName#0;class#UI#0" />
-                <element signature="method#getRepositoryName#0;class#UI#0" />
-                <element signature="method#getRepositoryPath#0;class#UI#0" />
-                <element signature="e#4466#4759#1" />
-                <element signature="e#4619#4671#0" />
-                <element signature="e#4703#4749#0" />
-                <element signature="method#getValidExistingRepositoryPath#0;class#UI#0" />
-                <element signature="e#4989#5129#1" />
-                <element signature="method#showChangesFromLastCommit#0;class#UI#0" />
-                <element signature="method#printSystemStatus#0;class#UI#0" />
-                <element signature="e#5847#6016#1" />
-                <element signature="e#6090#6286#1" />
-                <element signature="e#6355#6541#1" />
-                <element signature="e#6567#6642#1" />
-                <element signature="method#checkIfThereAreOpeningChangesAndGetUserDecision#0;class#UI#0" />
-                <element signature="e#6949#7295#1" />
-                <element signature="e#7171#7285#1" />
-                <element signature="method#initalizeHeadToCommit#0;class#UI#0" />
-                <element signature="method#getCommitSha1FromUser#0;class#UI#0" />
-                <element signature="method#printCollection#0;class#UI#0" />
-                <element signature="method#getExistBranchName#0;class#UI#0" />
-                <element signature="e#7250#7376#1" />
-                <element signature="method#getBranchNameFromUser#0;class#UI#0" />
-                <element signature="e#7718#7855#1" />
-                <element signature="method#getCommitMessageFromUser#0;class#UI#0" />
-              </folding>
+            <state relative-caret-position="204">
+              <caret line="64" column="7" selection-start-line="64" selection-start-column="7" selection-end-line="64" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/StringUtilities.java">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="1" lean-forward="true" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+            <state relative-caret-position="-621">
+              <caret line="93" column="7" selection-start-line="93" selection-start-column="7" selection-end-line="93" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitBlobs.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-757">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitFolders.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="317">
+              <caret line="71" selection-start-line="71" selection-end-line="71" />
             </state>
           </provider>
         </entry>
@@ -95,8 +60,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/engine/src/FileWalkResult.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="204">
+              <caret line="12" selection-start-line="12" selection-end-line="12" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#366#367#0" expanded="true" />
@@ -111,166 +76,44 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/FileUtils.java">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitSingleBranch.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="33" selection-start-line="33" selection-end-line="33" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#isDirectoryNameValid#0;class#FileUtils#0" />
-                <element signature="method#Zip#0;class#FileUtils#0" />
-              </folding>
+            <state relative-caret-position="187">
+              <caret line="40" column="3" selection-start-line="40" selection-start-column="3" selection-end-line="40" selection-end-column="3" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/Repository.java">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/ObjectFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-44">
-              <caret line="404" column="15" selection-start-line="404" selection-start-column="15" selection-end-line="404" selection-end-column="15" />
-              <folding>
-                <element signature="e#562#865#0" />
-                <element signature="e#3062#3835#0" />
-                <element signature="e#3841#4157#0" />
-                <element signature="e#4163#4594#0" />
-                <element signature="e#5641#5673#0" />
-                <element signature="method#visitFileFailed#0;class#4881:8046" />
-                <element signature="method#postVisitDirectory#0;class#4881:8046" />
-                <element signature="e#6616#6639#0" />
-                <element signature="e#7466#7532#0" />
-                <element signature="e#7764#7862#1" />
-                <element signature="e#7868#7972#1" />
-                <element signature="e#8141#8347#0" />
-                <element signature="e#8353#9024#0" />
-                <element signature="e#8800#8864#1" />
-                <element signature="e#9030#9562#0" />
-                <element signature="e#9568#9942#0" />
-                <element signature="e#9948#10676#0" />
-                <element signature="e#10178#10384#1" />
-                <element signature="e#10390#10670#1" />
-                <element signature="e#10682#10957#0" />
-                <element signature="e#10963#11452#0" />
-                <element signature="e#11052#11121#0" />
-                <element signature="e#11247#11446#1" />
-                <element signature="e#11458#11762#0" />
-                <element signature="e#11768#13099#0" />
-                <element signature="e#12876#13011#1" />
-                <element signature="e#12933#13001#1" />
-                <element signature="e#13416#13740#0" />
-                <element signature="e#14853#15240#0" />
-                <element signature="e#15830#16397#1" />
-                <element signature="e#16879#18216#0" />
-                <element signature="class#16965:18169" />
-                <element signature="method#preVisitDirectory#0;class#16965:18169" />
-                <element signature="e#17187#17263#1" />
-                <element signature="e#17269#17341#1" />
-                <element signature="method#visitFile#0;class#16965:18169" />
-                <element signature="method#visitFileFailed#0;class#16965:18169" />
-                <element signature="method#postVisitDirectory#0;class#16965:18169" />
-                <element signature="e#18033#18144#1" />
-                <element signature="e#18802#19001#0" />
-                <element signature="e#19007#19139#0" />
-                <element signature="e#19145#19277#0" />
-              </folding>
+            <state relative-caret-position="68">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/Blob.java">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/RootFolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#261#262#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="850">
+              <caret line="58" selection-start-line="58" selection-end-line="58" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/Node.java">
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitCommits.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="25" selection-start-line="25" selection-end-line="25" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#220#221#0" expanded="true" />
-                <element signature="e#257#258#0" expanded="true" />
-                <element signature="e#767#768#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="510">
+              <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/resources/commons-codec-1.12.jar!/org/apache/commons/codec/digest/DigestUtils.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="192" selection-start-line="192" selection-end-line="192" />
-              <folding>
-                <element signature="e#4928#4929#0" expanded="true" />
-                <element signature="e#4987#4988#0" expanded="true" />
-                <element signature="e#5320#5321#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/Branch.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="10" selection-start-line="10" selection-end-line="10" />
-              <folding>
-                <element signature="e#322#323#0" expanded="true" />
-                <element signature="e#363#364#0" expanded="true" />
-                <element signature="e#402#403#0" expanded="true" />
-                <element signature="e#462#463#0" expanded="true" />
-                <element signature="e#512#513#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/engine/src/Magit.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-102">
-              <caret line="8" column="42" lean-forward="true" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
-              <folding>
-                <element signature="method#Magit#0;class#Magit#0" />
-                <element signature="e#654#838#1" />
-                <element signature="method#createHeadAndMasterBranchFiles#0;class#Magit#0" />
-                <element signature="method#updateCommitsAndBranchesFromNewRepository#0;class#Magit#0" />
-                <element signature="method#addAllBranches#0;class#Magit#0" />
-                <element signature="e#2499#2971#1" />
-                <element signature="e#2553#2961#1" />
-                <element signature="method#setHeadPointToActiveBranch#0;class#Magit#0" />
-                <element signature="method#addAllCommits#0;class#Magit#0" />
-                <element signature="e#3571#3764#1" />
-                <element signature="method#addCurrentBranchCommits#0;class#Magit#0" />
-                <element signature="e#3994#4587#1" />
-                <element signature="e#4190#4346#1" />
-                <element signature="e#4352#4577#1" />
-                <element signature="method#updateActiveBranchContent#0;class#Magit#0" />
-                <element signature="method#handleNewCommit#0;class#Magit#0" />
-                <element signature="method#checkIfBranchNameIsExist#0;class#Magit#0" />
-                <element signature="e#6349#6429#1" />
-                <element signature="e#6435#6472#1" />
-                <element signature="method#createNewBranch#0;class#Magit#0" />
-                <element signature="method#deleteExistingBranch#0;class#Magit#0" />
-                <element signature="method#getAllBarnchesInSystem#0;class#Magit#0" />
-                <element signature="e#7467#8020#1" />
-                <element signature="method#showActiveBranchHistory#0;class#Magit#0" />
-                <element signature="n#!!doc;n#createActiveBranchHistory#0;n#Magit#0" />
-                <element signature="method#createActiveBranchHistory#0;class#Magit#0" />
-                <element signature="e#8630#9032#1" />
-              </folding>
-            </state>
-          </provider>
+        <entry file="file://$PROJECT_DIR$/engine/src/parser/MAGit (1)1.xsd">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -358,8 +201,9 @@
     <other-services-enabled>true</other-services-enabled>
     <auto-save>true</auto-save>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-15" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="198" />
+    <option name="y" value="93" />
     <option name="width" value="1602" />
     <option name="height" value="1035" />
   </component>
@@ -427,6 +271,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ziv3r\Desktop\M.Agit\M.A\engine\src\parser" />
+      <recent name="C:\Users\ziv3r\Desktop\M.Agit\M.A\parser\src" />
       <recent name="C:\Users\ziv3r\Desktop\summer semester\javaSummer\M.A.Git\ui\src" />
       <recent name="C:\Users\ziv3r\Desktop\summer semester\javaSummer\M.A.Git\ui" />
     </key>
@@ -490,12 +336,12 @@
       <workItem from="1564855336105" duration="9482000" />
       <workItem from="1564865909799" duration="525000" />
       <workItem from="1564901642414" duration="58469000" />
-      <workItem from="1565069939613" duration="9080000" />
+      <workItem from="1565069939613" duration="12810000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="236435000" />
+    <option name="totallyTimeSpent" value="240165000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -507,7 +353,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
+    <frame x="-7" y="-7" width="1295" height="695" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.60714287" visible="true" weight="0.22591093" />
@@ -520,7 +366,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.25399646" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.26642984" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.1705151" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.23623446" />
@@ -865,22 +711,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/engine/src/FileWalkResult.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#366#367#0" expanded="true" />
-            <element signature="e#402#403#0" expanded="true" />
-            <element signature="e#454#455#0" expanded="true" />
-            <element signature="e#489#490#0" expanded="true" />
-            <element signature="e#545#546#0" expanded="true" />
-            <element signature="e#584#585#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/engine/src/Blob.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -997,14 +827,14 @@
     <entry file="file://$PROJECT_DIR$/engine/src/StringUtilities.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
-          <caret line="16" column="1" lean-forward="true" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/engine/src/Magit.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-102">
-          <caret line="8" column="42" lean-forward="true" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
+          <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
           <folding>
             <element signature="method#Magit#0;class#Magit#0" />
             <element signature="e#654#838#1" />
@@ -1039,8 +869,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/src/UI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="52" column="19" lean-forward="true" selection-start-line="52" selection-start-column="19" selection-end-line="52" selection-end-column="19" />
+        <state relative-caret-position="691">
+          <caret line="195" selection-start-line="195" selection-end-line="195" />
           <folding>
             <element signature="method#UI#0;class#UI#0" />
             <element signature="e#276#309#0" />
@@ -1079,6 +909,81 @@
             <element signature="e#7718#7855#1" />
             <element signature="method#getCommitMessageFromUser#0;class#UI#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MAGit (1)1.xsd">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitCommits.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-621">
+          <caret line="93" column="7" selection-start-line="93" selection-start-column="7" selection-end-line="93" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitSingleBranch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="40" column="3" selection-start-line="40" selection-start-column="3" selection-end-line="40" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/ObjectFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/RootFolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="850">
+          <caret line="58" selection-start-line="58" selection-end-line="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitBlob.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="64" column="7" selection-start-line="64" selection-start-column="7" selection-end-line="64" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/FileWalkResult.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#366#367#0" expanded="true" />
+            <element signature="e#402#403#0" expanded="true" />
+            <element signature="e#454#455#0" expanded="true" />
+            <element signature="e#489#490#0" expanded="true" />
+            <element signature="e#545#546#0" expanded="true" />
+            <element signature="e#584#585#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitBlobs.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-757">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/src/parser/MagitFolders.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
         </state>
       </provider>
     </entry>

@@ -182,7 +182,6 @@ public class UI {
         }
     }
 
-
     private boolean checkIfThereAreOpeningChangesAndGetUserDecision() throws IOException {
         if (!m_Engine.getRepository().isWcClean()) {
             System.out.println("There are unsaved changes, would you like to commit first?(yes/no)");
@@ -194,6 +193,7 @@ public class UI {
         }
         return false;
     }
+
     private void initalizeHeadToCommit() throws IOException {
         String commitSha1 = getCommitSha1FromUser();
         m_Engine.initializeHeadToCommit(commitSha1);
@@ -255,24 +255,11 @@ public class UI {
 //3.make m_MagitPath , m_Activeuser non static.
 //4.change item typeHolder to be file and not Blob !! (folder content).
 //5.think where and to handle all the exceptions.
-
+//6.Handle Empty Files
 //XML ........
 
 //importans questions :
 //2. commits that down need and how to go there ?
 //3. XML explanations !?
-//4.remmber this commit delta - think about it with noam ...
+//4.remember this commit delta - think about it with noam ...
 
-
-//    private String getBranchNameForCheckOut(){
-//        String branchName;
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.println("please enter a branch name");
-//        branchName = scanner.nextLine();
-//
-//        while(!m_Engine.checkBranchNameIsExist(branchName)){
-//            System.out.println("please enter a branch name that exist");
-//            branchName = scanner.nextLine();
-//        }
-//        return branchName;
-//    }
